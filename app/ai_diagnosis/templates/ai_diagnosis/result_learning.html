@@ -1,0 +1,22 @@
+{% extends "ai_diagnosis/base.html" %}
+{% block content %}
+<div class="container">
+    <h1>学習サイトリンク</h1>
+    <p>（ダミーページ）</p>
+
+    <div class="result-mini">
+        <p>あなたのタイプ：</p>
+        <ul>
+            <li>メイン：{{ main_result }}</li>
+            <li>サブ：{{ sub_result }}</li>
+        </ul>
+    </div>
+
+    <div class="link-cards">
+        <a href="{{ url_for('ai_bp.result_main') }}" class="card">
+            <img src="{{ url_for('ai_bp.static', filename='images/back.jpg') }}" alt="戻る">
+            <p>診断結果トップへ戻る</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

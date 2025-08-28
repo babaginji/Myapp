@@ -1,0 +1,242 @@
+/* --------------------
+   基本レイアウト
+-------------------- */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    --bg-color: white;       /* 背景色変数（テーマ用） */
+    --text-color: black;     /* 文字色変数（テーマ用） */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.container {
+    width: 90%;
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 20px;
+}
+
+/* --------------------
+   誕生日入力ボックス
+-------------------- */
+.birthday-box {
+    position: absolute;
+    top: 40px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255,255,255,0.9);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    gap: 10px;
+    z-index: 10;
+}
+
+.birthday-box select {
+    padding: 5px;
+    font-size: 14px;
+}
+
+.birthday-box button {
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* 年/月/日セレクトボックス行 */
+.select-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+.birthday-box {
+    width: 200px;       /* 元のサイズを維持 */
+    max-height: 300px;  /* ボックス内でスクロールしたい高さ */
+    overflow-y: auto;   /* 縦スクロールを許可 */
+}
+
+/* --------------------
+   右上丸ボタン
+-------------------- */
+.birthday-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 15;
+}
+
+/* --------------------
+   人的資本表示
+-------------------- */
+#timeValue {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+#totalValue {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* --------------------
+   時計
+-------------------- */
+.clock-wrapper {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin: 20px auto;
+}
+
+#clockCanvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%; /* 円形 */
+}
+
+/* --------------------
+   コインアニメーション
+-------------------- */
+#coinContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 100%;
+    pointer-events: none;
+}
+
+.coin {
+    position: absolute;
+    background-color: gold;
+    color: black;
+    padding: 2px 6px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+    opacity: 0.9;
+}
+
+/* --------------------
+   テーマ切替ボタン
+-------------------- */
+.theme-switch {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.theme-btn {
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* --------------------
+   複利時計説明ボックス
+-------------------- */
+.explanation-box {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    max-width: 400px;
+    max-height: 60%;        /* 高さ制限を追加 */
+    overflow-y: auto;       /* 縦スクロール可能に */
+    background-color: white;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transform: translate(-50%, -50%);
+    z-index: 20;
+}
+
+/* 説明ボックス内タイトル */
+.explanation-box h3 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+/* 説明文 */
+.explanation-box p {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+
+.explanation-box h3 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.explanation-box p {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* --------------------
+   テーマ: 白
+-------------------- */
+.light-theme {
+    --bg-color: white;
+    --text-color: black;
+}
+
+/* --------------------
+   テーマ: 黒
+-------------------- */
+.dark-theme {
+    --bg-color: black;
+    --text-color: white;
+}
+
+/* --------------------
+   ボタン全般
+-------------------- */
+button {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #ddd;
+}
+/* 右上ボックスのタイトル */
+.birthday-box .box-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+/* 表示切替ボタン */
+.toggle-section {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.toggle-btn {
+    padding: 4px 6px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+    background: #eee;
+}

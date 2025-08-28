@@ -1,0 +1,267 @@
+/* ================================================== */
+/*               全体設定 (レスポンシブ対応)        */
+/* ================================================== */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: "Yu Gothic", sans-serif;
+    background: #fafafa;
+    -webkit-text-size-adjust: 100%;
+    box-sizing: border-box;
+}
+*, *::before, *::after { box-sizing: inherit; }
+
+/* ================================================== */
+/*                コンテナ設定                        */
+/* ================================================== */
+.container {
+    max-width: 600px;
+    width: 90%;       
+    margin: 0 auto;   /* 中央寄せ */
+    padding: 20px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* ================================================== */
+/*                タイトル & 質問                     */
+/* ================================================== */
+h1 {
+    font-size: clamp(1.8em, 5vw, 2.5em);
+    margin-bottom: 40px;
+    color: #e91e63;
+}
+.question {
+    font-weight: bold;
+    margin: 30px 0 10px;
+    font-size: clamp(1em, 4vw, 1.2em);
+}
+
+/* ================================================== */
+/*                選択肢 & ボタン                     */
+/* ================================================== */
+.option {
+    padding: 12px;
+    margin: 6px 0;
+    border: 2px solid #e91e63;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: clamp(1em, 4vw, 1.1em);
+    transition: 0.2s;
+}
+.option:hover { background-color: #fce4ec; }
+.option.selected {
+    background-color: #e91e63;
+    color: white;
+    font-weight: bold;
+}
+.button-group { margin-top: 20px; }
+.button-group button {
+    margin: 0 10px;
+    padding: 12px 24px;
+    font-size: clamp(1em, 4vw, 1.1em);
+    border: none;
+    border-radius: 6px;
+    background-color: #e91e63;
+    color: white;
+    cursor: pointer;
+}
+.button-group button:hover { background-color: #d81b60; }
+
+/* ================================================== */
+/*                診断結果ボックス                    */
+/* ================================================== */
+
+.result-box {
+    position: relative;
+    padding: 20px 15px 15px 15px;
+    border: 2px solid;
+    border-radius: 10px;
+    margin-bottom: 7px;
+    margin-top: 25px;
+    color: #000; /* 型名の文字色 */
+}
+
+/* メインとサブで色分け＋半透明背景 */
+.main-result {
+    border-color: #e91e63;
+    background-color: rgba(233, 30, 99, 0.1); /* 半透明ピンク */
+}
+
+.sub-result {
+    border-color: #2196f3;
+    background-color: rgba(33, 150, 243, 0.1); /* 半透明ブルー */
+}
+
+/* タイトルラベル（枠に半分重なる） */
+.type-label {
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background-color: rgba(255, 255, 255, 0.8); /* 半透明白 */
+    padding: 0 8px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* メイン／サブタイトル文字色 */
+.main-result .type-label {
+    color: #e91e63;
+}
+
+.sub-result .type-label {
+    color: #2196f3;
+}
+
+/* 型名 */
+.type-name {
+    font-size: 14px;
+    margin: 0;
+    padding-top: 5px;
+    word-break: break-word;
+}
+
+.result-mini {
+    margin: 12px auto 24px;
+    padding: 12px;
+    border: 1px dashed #e91e63;
+    border-radius: 6px;
+    background: #fff;
+    text-align: left;
+    max-width: 560px;
+}
+/* 説明文用共通スタイル */
+.description-container {
+    position: relative;
+    margin-bottom: 10px; /* 説明文2との間隔を少し広げる */
+}
+
+
+.description, .description2 {
+    overflow: hidden;
+    line-height: 1.5em;
+    margin: 0;
+    transition: max-height 0.6s ease;
+}
+
+
+/* 説明文1 */
+.description {
+    -webkit-line-clamp: 1;
+}
+
+/* 説明文2 */
+.description2 {
+    -webkit-line-clamp: 1;
+}
+
+/* 展開時 */
+.description.expanded, .description2.expanded {
+    -webkit-line-clamp: unset;
+}
+
+/* トグルボタン共通 */
+.toggle-btn, .toggle-btn2 {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    background: none;
+    border: none;
+    color: rgba(255, 0, 0, 0.5); /* 半透明に変更 */
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0;
+    line-height: 1;
+    font-size: 0.8em; /* 一回り小さく */
+}
+
+
+
+/* ================================================== */
+/*                カード型リンク                       */
+/* ================================================== */
+.next-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+    justify-items: center; /* 中央揃え */
+}
+
+/* 次に進むカードエリア */
+.next-steps {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2列レイアウト */
+    gap: 20px;
+    margin-top: 30px;
+}
+
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    background: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.card img {
+    width: 100%;
+    max-width: 180px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+}
+.card img {
+    width: 100%;
+    max-width: 180px;
+    height: auto; /* 高さ固定せず縦横比維持 */
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+
+/* ================================================== */
+/*                フッターナビ                        */
+/* ================================================== */
+.footer-nav {
+    margin-top: 28px;
+}
+.link-like {
+    color: #e91e63;
+    text-decoration: none;
+    font-weight: bold;
+}
+.link-like:hover { text-decoration: underline; }
+
+.container {
+    max-width: 95%;       /* 横幅はほぼ全幅 */
+    width: 95vw;          /* ビューポート幅に合わせる */
+    margin: 0 auto;
+    padding: 20px 12px;   /* 上下20px、左右12pxで余白を少し確保 */
+    text-align: center;
+    box-sizing: border-box;
+}

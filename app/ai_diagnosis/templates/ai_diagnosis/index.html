@@ -1,0 +1,101 @@
+{% extends "ai_diagnosis/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>AI投資診断</h1>
+    <form method="POST" id="quizForm">
+        <div class="question-page">
+            <p class="question">Q1. 主な投資の目的は？</p>
+            <div class="option" data-q="Q1" onclick="selectOption('Q1', this)">老後資金</div>
+            <div class="option" data-q="Q1" onclick="selectOption('Q1', this)">資産形成</div>
+            <div class="option" data-q="Q1" onclick="selectOption('Q1', this)">一攫千金</div>
+            <input type="hidden" name="Q1" id="Q1">
+
+            <p class="question">Q2. 一度投資したら、どのくらいの期間運用可能？</p>
+            <div class="option" data-q="Q2" onclick="selectOption('Q2', this)">1年以内</div>
+            <div class="option" data-q="Q2" onclick="selectOption('Q2', this)">3〜9年</div>
+            <div class="option" data-q="Q2" onclick="selectOption('Q2', this)">10年以上</div>
+            <input type="hidden" name="Q2" id="Q2">
+
+            <p class="question">Q3. 投資の勉強や運用に使える時間はどれくらい？</p>
+            <div class="option" data-q="Q3" onclick="selectOption('Q3', this)">1日1時間以上</div>
+            <div class="option" data-q="Q3" onclick="selectOption('Q3', this)">週に数時間</div>
+            <div class="option" data-q="Q3" onclick="selectOption('Q3', this)">できるだけ手間かけたくない</div>
+            <input type="hidden" name="Q3" id="Q3">
+
+            <div class="button-group">
+                <button type="button" onclick="nextPage()">次へ</button>
+            </div>
+        </div>
+
+        <div class="question-page">
+            <p class="question">Q4. 投資で損失が出ることについて、どのくらい許容できる？</p>
+            <div class="option" data-q="Q4" onclick="selectOption('Q4', this)">絶対に減らしたくない</div>
+            <div class="option" data-q="Q4" onclick="selectOption('Q4', this)">一時的に下がるのは我慢できる</div>
+            <div class="option" data-q="Q4" onclick="selectOption('Q4', this)">損をする覚悟もある</div>
+            <input type="hidden" name="Q4" id="Q4">
+
+            <p class="question">Q5. 毎月の投資可能金額（月収に対する割合）は？</p>
+            <div class="option" data-q="Q5" onclick="selectOption('Q5', this)">10%以下</div>
+            <div class="option" data-q="Q5" onclick="selectOption('Q5', this)">20%前後</div>
+            <div class="option" data-q="Q5" onclick="selectOption('Q5', this)">30%以上</div>
+            <input type="hidden" name="Q5" id="Q5">
+
+            <p class="question">Q6. 貯金額は月収の何倍？</p>
+            <div class="option" data-q="Q6" onclick="selectOption('Q6', this)">1倍以下</div>
+            <div class="option" data-q="Q6" onclick="selectOption('Q6', this)">2〜5倍</div>
+            <div class="option" data-q="Q6" onclick="selectOption('Q6', this)">5倍以上</div>
+            <input type="hidden" name="Q6" id="Q6">
+
+            <div class="button-group">
+                <button type="button" onclick="prevPage()">前へ</button>
+                <button type="button" onclick="nextPage()">次へ</button>
+            </div>
+        </div>
+
+        <div class="question-page">
+            <p class="question">Q7. 仮想通貨に興味はある？</p>
+            <div class="option" data-q="Q7" onclick="selectOption('Q7', this)">ある</div>
+            <div class="option" data-q="Q7" onclick="selectOption('Q7', this)">ない</div>
+            <input type="hidden" name="Q7" id="Q7">
+
+            <p class="question">Q8. テクノロジーや新金融技術に興味ある？</p>
+            <div class="option" data-q="Q8" onclick="selectOption('Q8', this)">ある</div>
+            <div class="option" data-q="Q8" onclick="selectOption('Q8', this)">ない</div>
+            <input type="hidden" name="Q8" id="Q8">
+
+            <p class="question">Q9. 年齢は？</p>
+            <div class="option" data-q="Q9" onclick="selectOption('Q9', this)">10代</div>
+            <div class="option" data-q="Q9" onclick="selectOption('Q9', this)">20代</div>
+            <div class="option" data-q="Q9" onclick="selectOption('Q9', this)">30代</div>
+            <div class="option" data-q="Q9" onclick="selectOption('Q9', this)">40代</div>
+            <div class="option" data-q="Q9" onclick="selectOption('Q9', this)">50代以上</div>
+            <input type="hidden" name="Q9" id="Q9">
+        <div class="button-group">
+            <button type="button" onclick="nextPage()">次へ</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let currentPage = 0;
+        function showPage(n){
+            const pages = document.querySelectorAll(".question-page");
+            pages.forEach((page,i)=>{ page.style.display = (i===n)?"block":"none"; });
+        }
+        function nextPage(){
+            const pages = document.querySelectorAll(".question-page");
+            if(currentPage < pages.length-1){ currentPage++; showPage(currentPage); }
+        }
+        function prevPage(){
+            if(currentPage>0){ currentPage--; showPage(currentPage); }
+        }
+        function selectOption(qName, element){
+            document.querySelectorAll(`[data-q="${qName}"]`).forEach(el=>el.classList.remove("selected"));
+            element.classList.add("selected");
+            const input = document.getElementById(qName);
+            if(input){ input.value = element.textContent.trim(); }
+        }
+        window.onload = function(){ showPage(0); }
+</script>
+{% endblock %}
