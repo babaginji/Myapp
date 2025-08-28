@@ -2,13 +2,11 @@ from flask import Blueprint, render_template, request, session, redirect, url_fo
 
 ai_bp = Blueprint("ai_diagnosis", __name__, template_folder="templates")
 
-# 秘密鍵は __init__.py で設定するのでここでは不要
-# app.secret_key = ...
-
 
 @ai_bp.route("/ai", methods=["GET", "POST"])
-def index():
+def ai_home():
     if request.method == "POST":
+        # フォーム回答取得
         answers = {f"Q{i}": request.form.get(f"Q{i}") for i in range(1, 10)}
         q1, q2, q3 = answers["Q1"], answers["Q2"], answers["Q3"]
         q4, q5, q6 = answers["Q4"], answers["Q5"], answers["Q6"]
@@ -75,7 +73,7 @@ def index():
 
         return redirect(url_for("ai_diagnosis.result_main"))
 
-    return render_template("index.html")
+    return render_template("ai_diagnosis/index.html")
 
 
 @ai_bp.route("/ai/result")
@@ -83,7 +81,10 @@ def result_main():
     main_result = session.get("main_result")
     sub_result = session.get("sub_result")
     if not main_result:
-        return redirect(url_for("ai_diagnosis.index"))
+        return redirect(url_for("ai_diagnosis.ai_home"))
+    return render_template(
+        "ai_diagnosis/result_main.html", main_result=main_result, sub_result=sub_result
+    )
 
     descriptions = {
         "貯蓄優先型": "★「あなたの投資適性について」あなたはまず、投資を始める前に「お金をためる力」を育てることが大切です。毎月の収支を見直し、不要なサブスクや衝動買いを控えることで、手元に自由に使える資金を確保できます。この段階ではまだ市場にお金を投入する必要はなく、生活費を安定させながら貯蓄を積み上げること自体が投資の土台になります。例えば、毎月の給料から一定額を自動的に貯金口座に移す「先取り貯金」を取り入れるだけで、無理なく資金を作ることができます。貯蓄の習慣を身につけることで、後に投資を始めた際、焦ることなく長期的に資産を育てる準備が整います。この時期にしっかり土台を作る人ほど、将来的に安定した運用を行いやすく、心の余裕も持てるでしょう。必要資金の目安としては、生活費の3〜6か月分を目標にするのがおすすめです。無理のない範囲で少しずつ積み上げていくことが、将来の大きな安心につながります。",
