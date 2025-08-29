@@ -91,30 +91,29 @@
             btn.textContent = "閉じる ⇧";
         }
     }
-    // 左スワイプで feed に戻る処理
-let touchStartX = 0;
-let touchEndX = 0;
-
-document.addEventListener('touchstart', e => {
-    touchStartX = e.changedTouches[0].screenX;
-});
-
-document.addEventListener('touchend', e => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-});
-
-function handleSwipe() {
-    const swipeThreshold = 60; // スワイプ最低距離
-    if (touchStartX - touchEndX > swipeThreshold) { // 左スワイプ
-        const pageFlip = document.getElementById('pageFlip');
-        pageFlip.classList.add('active');
-
-        // CSSアニメーション終了後に feed ページへ遷移
-        setTimeout(() => {
-            window.location.href = "{{ url_for('feed.feed_home') }}"; // feed ページURL
-        }, 600); // transition に合わせる
-    }
-}
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let startX = 0;
+        let endX = 0;
+    
+        document.addEventListener("touchstart", e => {
+            startX = e.touches[0].clientX;
+        });
+    
+        document.addEventListener("touchend", e => {
+            endX = e.changedTouches[0].clientX;
+            if (startX - endX > 80) {  // 左スワイプ検出
+                // ページめくりアニメーション
+                document.body.classList.add("page-turn");
+    
+                // アニメーション後に feed に移動
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('feed.feed_home') }}";
+                }, 600);
+            }
+        });
+    });
+    </script>
+    
 {% endblock %}
