@@ -270,3 +270,31 @@ h1 {
     text-align: center;
     box-sizing: border-box;
 }
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    z-index: 1000;
+}
+
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.bottom-nav a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    flex: 1;
+    text-align: center;
+}
+
+.bottom-nav a:hover {
+    color: #007bff;
+}

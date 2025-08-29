@@ -9,9 +9,15 @@
 <body>
     <div class="container">
         {% block content %}{% endblock %}
-        <div class="footer-nav">
-            <a href="{{ url_for('ai_diagnosis.ai_home') }}" class="link-like">トップへ戻る</a>
-        </div>
     </div>
+    <footer>
+        <nav class="bottom-nav">
+            <a href="{{ url_for('feed.feed_home') }}">ホーム</a>
+            <a href="#">探す</a>
+            <a href="#">投稿</a>
+            <a href="#">ポートフォリオ</a>
+            <a href="#">プロフィール</a>
+        </nav>
+    </footer>
 </body>
 </html>
