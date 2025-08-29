@@ -92,28 +92,4 @@
         }
     }
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        let startX = 0;
-        let endX = 0;
-    
-        document.addEventListener("touchstart", e => {
-            startX = e.touches[0].clientX;
-        });
-    
-        document.addEventListener("touchend", e => {
-            endX = e.changedTouches[0].clientX;
-            if (startX - endX > 80) {  // 左スワイプ検出
-                // ページめくりアニメーション
-                document.body.classList.add("page-turn");
-    
-                // アニメーション後に feed に移動
-                setTimeout(() => {
-                    window.location.href = "{{ url_for('feed.feed_home') }}";
-                }, 600);
-            }
-        });
-    });
-    </script>
-    
 {% endblock %}

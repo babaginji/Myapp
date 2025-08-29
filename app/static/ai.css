@@ -270,15 +270,3 @@ h1 {
     text-align: center;
     box-sizing: border-box;
 }
-/* iPhone風 角丸 */
-body {
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-/* ページめくりアニメーション */
-.page-turn {
-    transform: rotateY(-90deg);
-    transition: transform 0.6s ease-in-out;
-    transform-origin: left center;
-}
