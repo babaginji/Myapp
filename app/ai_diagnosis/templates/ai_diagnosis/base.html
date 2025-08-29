@@ -12,12 +12,36 @@
     </div>
     <footer>
         <nav class="bottom-nav">
-            <a href="{{ url_for('feed.feed_home') }}">ホーム</a>
+            <a href="#" id="homeBtn">ホーム</a>
             <a href="#">探す</a>
             <a href="#">投稿</a>
             <a href="#">ポートフォリオ</a>
             <a href="#">プロフィール</a>
         </nav>
-    </footer>
+    </footer>   
+    <script>
+        // ページを開いたとき
+        document.addEventListener("DOMContentLoaded", function() {
+            const path = window.location.pathname;
+        
+            // feed以外のページを開いたときに「ホームから開いたページ」として記録
+            if (!path.startsWith("/feed")) {
+                localStorage.setItem("homePage", path);
+            }
+        });
+        
+        // ホームボタン押したときの挙動
+        document.getElementById("homeBtn").addEventListener("click", function(e) {
+            e.preventDefault();
+            const saved = localStorage.getItem("homePage");
+        
+            if (saved && saved !== window.location.pathname) {
+                window.location.href = saved;   // 記録したページに戻る
+            } else {
+                window.location.href = "{{ url_for('feed.feed_home') }}"; // デフォルトはfeed
+            }
+        });
+        </script>
+        
 </body>
 </html>
