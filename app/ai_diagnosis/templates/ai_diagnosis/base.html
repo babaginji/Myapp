@@ -20,29 +20,36 @@
         </nav>
     </footer>   
     <script>
-        // ページを開いたとき
-        document.addEventListener("DOMContentLoaded", function() {
-            const path = window.location.pathname;
-            
-            // 既にhomePageが記録されていなければ保存
-            if (!localStorage.getItem("homePage") && !path.startsWith("/feed")) {
-                localStorage.setItem("homePage", path);
-            }
-        });
+        // ホームボタン
+        const homeBtn = document.getElementById("homeBtn");
         
-        // ホームボタン押したとき
-        document.getElementById("homeBtn").addEventListener("click", function(e) {
+        homeBtn.addEventListener("click", function(e) {
             e.preventDefault();
             const saved = localStorage.getItem("homePage");
         
             if (saved && saved !== window.location.pathname) {
-                window.location.href = saved;   // 記録したページに戻る
+                window.location.href = saved;
             } else {
-                window.location.href = "{{ url_for('feed.feed_home') }}"; // デフォルトはfeed
+                window.location.href = "{{ url_for('feed.feed_home') }}";
+            }
+        });
+        
+        // ページを開いたときに homePage を更新
+        document.addEventListener("DOMContentLoaded", function() {
+            const path = window.location.pathname;
+            const ref = document.referrer;
+        
+            // referrer が feed かホームなら homePage を更新
+            if (ref.includes("/feed") || ref === window.location.origin + "/") {
+                localStorage.setItem("homePage", path);
+            }
+        
+            // feed の場合は homePage を消す
+            if (path.includes("/feed")) {
+                localStorage.removeItem("homePage");
             }
         });
         </script>
-        
         
 </body>
 </html>
