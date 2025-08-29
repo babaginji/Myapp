@@ -1,6 +1,8 @@
 {% extends "ai_diagnosis/base.html" %}
 {% block content %}
 <div class="container">
+<!-- スワイプアニメ用ラッパー -->
+<div id="swipeOverlay"></div>
     <h1>診断結果</h1>
 
     <!-- メイン・サブタイプ表示はそのまま -->
@@ -85,6 +87,32 @@
             desc.style.maxHeight = desc.scrollHeight + "px";
             desc.classList.add("expanded");
             btn.textContent = "閉じる ⇧";
+        }
+    }
+    // 左スワイプで feed に戻る
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const minSwipeDistance = 50; // 最低スワイプ距離(px)
+        if (touchStartX - touchEndX > minSwipeDistance) {
+            // 左スワイプ
+            const overlay = document.getElementById('swipeOverlay');
+            overlay.classList.add('active');
+
+            // アニメ終了後に feed ページへ遷移
+            setTimeout(() => {
+                window.location.href = "{{ url_for('ai_diagnosis.ai_home') }}"; // feed ページのURLに変更
+            }, 400); // CSS transition duration に合わせる
         }
     }
 </script>
