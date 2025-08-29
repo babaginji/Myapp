@@ -25,6 +25,14 @@
         
         homeBtn.addEventListener("click", function(e) {
             e.preventDefault();
+            const path = window.location.pathname;
+        
+            // AI診断のサブページなら feed に戻す
+            if (path.startsWith("/ai/") && !path.endsWith("/ai")) {
+                window.location.href = "{{ url_for('feed.feed_home') }}";
+                return;
+            }
+        
             const saved = localStorage.getItem("homePage");
         
             if (saved && saved !== window.location.pathname) {
