@@ -241,3 +241,25 @@ button:hover {
     background: #eee;
 }
 
+/* ------------------------------
+   フッター
+------------------------------ */
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #fff; /* フッターも白 */
+    border-top: none; /* 境界線なし */
+    z-index: 1000;
+}
+
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.bottom-nav a {
+    text-decoration: none;
+    color: #333;
+}
