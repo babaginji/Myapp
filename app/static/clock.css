@@ -34,6 +34,9 @@ body {
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     gap: 10px;
     z-index: 10;
+    width: 200px;       /* 元のサイズを維持 */
+    max-height: 40vh;  /* ボックス内でスクロールしたい高さ */
+    overflow-y: auto;   /* 縦スクロールを許可 */
 }
 
 .birthday-box select {
@@ -53,11 +56,6 @@ body {
     align-items: center;
     justify-content: center;
     gap: 5px;
-}
-.birthday-box {
-    width: 200px;       /* 元のサイズを維持 */
-    max-height: 300px;  /* ボックス内でスクロールしたい高さ */
-    overflow-y: auto;   /* 縦スクロールを許可 */
 }
 
 /* --------------------
@@ -226,6 +224,8 @@ button:hover {
     gap: 5px;
     margin-top: 10px;
 }
+
+
 
 .toggle-btn {
     padding: 4px 6px;

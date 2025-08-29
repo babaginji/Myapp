@@ -4,6 +4,7 @@
 <div class="container">
     <h1>AI投資診断</h1>
     <form method="POST" id="quizForm">
+        <!-- ページ1 -->
         <div class="question-page">
             <p class="question">Q1. 主な投資の目的は？</p>
             <div class="option" data-q="Q1" onclick="selectOption('Q1', this)">老後資金</div>
@@ -28,6 +29,7 @@
             </div>
         </div>
 
+        <!-- ページ2 -->
         <div class="question-page">
             <p class="question">Q4. 投資で損失が出ることについて、どのくらい許容できる？</p>
             <div class="option" data-q="Q4" onclick="selectOption('Q4', this)">絶対に減らしたくない</div>
@@ -53,6 +55,7 @@
             </div>
         </div>
 
+        <!-- ページ3（最終ページ） -->
         <div class="question-page">
             <p class="question">Q7. 仮想通貨に興味はある？</p>
             <div class="option" data-q="Q7" onclick="selectOption('Q7', this)">ある</div>
@@ -71,31 +74,40 @@
             <div class="option" data-q="Q9" onclick="selectOption('Q9', this)">40代</div>
             <div class="option" data-q="Q9" onclick="selectOption('Q9', this)">50代以上</div>
             <input type="hidden" name="Q9" id="Q9">
-        <div class="button-group">
-            <button type="button" onclick="nextPage()">次へ</button>
+
+            <div class="button-group">
+                <button type="button" onclick="prevPage()">前へ</button>
+                <!-- 最終ページは submit で送信 -->
+                <button type="submit">診断結果を見る</button>
+            </div>
         </div>
     </form>
 </div>
 
 <script>
-    let currentPage = 0;
-        function showPage(n){
-            const pages = document.querySelectorAll(".question-page");
-            pages.forEach((page,i)=>{ page.style.display = (i===n)?"block":"none"; });
-        }
-        function nextPage(){
-            const pages = document.querySelectorAll(".question-page");
-            if(currentPage < pages.length-1){ currentPage++; showPage(currentPage); }
-        }
-        function prevPage(){
-            if(currentPage>0){ currentPage--; showPage(currentPage); }
-        }
-        function selectOption(qName, element){
-            document.querySelectorAll(`[data-q="${qName}"]`).forEach(el=>el.classList.remove("selected"));
-            element.classList.add("selected");
-            const input = document.getElementById(qName);
-            if(input){ input.value = element.textContent.trim(); }
-        }
-        window.onload = function(){ showPage(0); }
+let currentPage = 0;
+
+function showPage(n){
+    const pages = document.querySelectorAll(".question-page");
+    pages.forEach((page,i)=>{ page.style.display = (i===n)?"block":"none"; });
+}
+
+function nextPage(){
+    const pages = document.querySelectorAll(".question-page");
+    if(currentPage < pages.length-1){ currentPage++; showPage(currentPage); }
+}
+
+function prevPage(){
+    if(currentPage>0){ currentPage--; showPage(currentPage); }
+}
+
+function selectOption(qName, element){
+    document.querySelectorAll(`[data-q="${qName}"]`).forEach(el=>el.classList.remove("selected"));
+    element.classList.add("selected");
+    const input = document.getElementById(qName);
+    if(input){ input.value = element.textContent.trim(); }
+}
+
+window.onload = function(){ showPage(0); }
 </script>
 {% endblock %}

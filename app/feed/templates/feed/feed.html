@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>トップページ</title>
     <!-- feed専用CSS -->
-    <link rel="stylesheet" href="{{ url_for('feed.static', filename='feed.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='feed.css') }}">
 </head>
 <body>
 
@@ -16,17 +16,17 @@
         <!-- 出てくるボックス -->
         <div class="feature-links" id="feature-links">
             <!-- 他ページに移動 -->
-            <a href="{{ url_for('ai_diagnosis.ai_home') }}">AI診断</a>
+            <a href="{{ url_for('ai_diagnosis.ai_home') }}">AI診断へ</a>
             <a href="{{ url_for('invest_clock.clock_home') }}">複利時計</a>
             <a href="#">本棚</a>
             <a href="#">複利計算</a>
         </div>
         <nav class="top-nav">
             <a href="#">
-                <img src="{{ url_for('feed.static', filename='images/tuuchi.jpg') }}" alt="通知" class="top-nav-icon">
+                <img src="{{ url_for('static', filename='images/tuuchi.jpg') }}" alt="通知" class="top-nav-icon">
             </a>
             <a href="#">
-                <img src="{{ url_for('feed.static', filename='images/DM.jpg') }}" alt="DM" class="top-nav-icon">
+                <img src="{{ url_for('static', filename='images/DM.jpg') }}" alt="DM" class="top-nav-icon">
             </a>
         </nav>
     </header>
@@ -45,19 +45,16 @@
         </nav>
     </footer>
 
-    <!-- JSはこの中にまとめる -->
     <script>
         const siteName = document.getElementById("site-name");
         const featureLinks = document.getElementById("feature-links");
 
-        // サイト名クリックでトグル
         siteName.addEventListener("click", (event) => {
             event.preventDefault();
             featureLinks.style.display =
                 featureLinks.style.display === "flex" ? "none" : "flex";
         });
 
-        // 外側クリックで閉じる
         document.addEventListener("click", (event) => {
             if (
                 !siteName.contains(event.target) &&

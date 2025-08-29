@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template
 
-feed_bp = Blueprint(
-    "feed", __name__, template_folder="templates", static_folder="static"
-)
+feed_bp = Blueprint("feed", __name__, template_folder="templates")
 
 
 @feed_bp.route("/")

@@ -184,22 +184,26 @@ h1 {
 /* ================================================== */
 /*                カード型リンク                       */
 /* ================================================== */
+
 .next-steps {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: 2fr; /* デフォルトは2列 */
     gap: 20px;
     margin-top: 30px;
-    justify-items: center; /* 中央揃え */
+    justify-items: center;
 }
 
-/* 次に進むカードエリア */
-.next-steps {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2列レイアウト */
-    gap: 20px;
-    margin-top: 30px;
+@media (min-width: 300px) {
+    .next-steps {
+        grid-template-columns: repeat(2, 1fr); /* 画面幅300px以上なら2列 */
+    }
 }
 
+@media (min-width: 900px) {
+    .next-steps {
+        grid-template-columns: repeat(3, 1fr); /* 画面幅900px以上なら3列 */
+    }
+}
 
 .card {
     display: flex;
@@ -212,16 +216,17 @@ h1 {
     background: #fff;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
+    width: 100%; /* 親グリッドに合わせて広がる */
 }
 
 .card img {
     width: 100%;
-    max-width: 180px;
-    height: 120px;
+    height: auto;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 10px;
 }
+
 
 .card p {
     font-size: 16px;

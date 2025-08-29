@@ -1,7 +1,13 @@
-{% extends "ai_diagnosis/base.html" %}
-
-{% block content %}
-<div class="container">
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人的資本時計</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='clock.css') }}">
+</head>
+<body class="light-theme">
+    <div class="container">
 
     <!-- 生年月日入力ボックス -->
     <div id="birthdayBox" class="birthday-box">
@@ -26,6 +32,7 @@
             <button class="toggle-btn" data-target="coinContainer">コイン</button>
             <button class="toggle-btn" data-target="totalValue">人的資本の累計</button>
         </div>
+        
     </div>
 
     <h1 id="appTitle">複利時計</h1>
@@ -50,7 +57,11 @@
 
 </div>
 
-<script>
+<!-- CSS読み込み -->
+<link rel="stylesheet" href="{{ url_for('static', filename='clock.css') }}">
+
+<!-- JS -->
+    <script>
     // ---------------------------
         // 定数設定
         // ---------------------------
@@ -328,5 +339,9 @@
 
             drawClock();
         };
-</script>
-{% endblock %}
+    </script>
+</body>
+</html>
+
+
+

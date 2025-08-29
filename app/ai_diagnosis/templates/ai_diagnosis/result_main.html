@@ -10,13 +10,14 @@
         <p class="type-name">{{ main_result }}</p>
     </div>
     <div class="description-container">
-        <p class="description" id="main-desc">{{ main_desc }}</p>
-        <button class="toggle-btn" onclick="toggleDescription('main-desc', this)">すべて見る ⇩</button>
+        <p class="description" id="main-desc1">{{ main_desc1 }}</p>
+        <button class="toggle-btn" onclick="toggleDescription('main-desc1', this)">すべて見る ⇩</button>
     </div>
     <div class="description-container">
         <p class="description" id="main-desc2">{{ main_desc2 }}</p>
         <button class="toggle-btn" onclick="toggleDescription('main-desc2', this)">すべて見る ⇩</button>
     </div>
+    
 
     <!-- サブタイプ -->
     <div class="result-box sub-result">
@@ -24,26 +25,39 @@
         <p class="type-name">{{ sub_result }}</p>
     </div>
     <div class="description-container">
-        <p class="description" id="sub-desc">{{ sub_desc }}</p>
-        <button class="toggle-btn" onclick="toggleDescription('sub-desc', this)">すべて見る ⇩</button>
+        <p class="description" id="sub-desc1">{{ sub_desc1 }}</p>
+        <button class="toggle-btn" onclick="toggleDescription('sub-desc1', this)">すべて見る ⇩</button>
     </div>
     <div class="description-container">
         <p class="description" id="sub-desc2">{{ sub_desc2 }}</p>
         <button class="toggle-btn" onclick="toggleDescription('sub-desc2', this)">すべて見る ⇩</button>
     </div>
+    
 
     <h2>次に進むにはこちら</h2>
+<div class="next-steps">
+    <a href="{{ url_for('ai_diagnosis.result_books') }}" class="card">
+        <img src="{{ url_for('static', filename='images/books.jpg') }}" alt="本で学ぶ">
+        <p>本で学ぶ</p>
+    </a>
 
-    <div class="next-steps">
-        <a href="{{ url_for('ai_bp.result_books') }}" class="card">本で学ぶ</a>
-        <a href="{{ url_for('ai_bp.result_learning') }}" class="card">学習サイト</a>
-        <a href="{{ url_for('ai_bp.result_start') }}" class="card">投資を始める</a>
-    </div>
+    <a href="{{ url_for('ai_diagnosis.result_learning') }}" class="card">
+        <img src="{{ url_for('static', filename='images/learning.jpg') }}" alt="学習サイト">
+        <p>学習サイト</p>
+    </a>
 
-    <a href="{{ url_for('ai_bp.index') }}">
-        <button>もう一度診断する</button>
+    <a href="{{ url_for('ai_diagnosis.result_start') }}" class="card">
+        <img src="{{ url_for('static', filename='images/start.jpeg') }}" alt="投資を始める">
+        <p>投資を始める</p>
+    </a>
+
+    <a href="#" class="card">
+        <img src="{{ url_for('static', filename='images/advice.jpg') }}" alt="投資アドバイス">
+        <p>アドバイス</p>
     </a>
 </div>
+
+    
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
