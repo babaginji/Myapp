@@ -23,14 +23,14 @@
         // ページを開いたとき
         document.addEventListener("DOMContentLoaded", function() {
             const path = window.location.pathname;
-        
-            // feed以外のページを開いたときに「ホームから開いたページ」として記録
-            if (!path.startsWith("/feed")) {
+            
+            // 既にhomePageが記録されていなければ保存
+            if (!localStorage.getItem("homePage") && !path.startsWith("/feed")) {
                 localStorage.setItem("homePage", path);
             }
         });
         
-        // ホームボタン押したときの挙動
+        // ホームボタン押したとき
         document.getElementById("homeBtn").addEventListener("click", function(e) {
             e.preventDefault();
             const saved = localStorage.getItem("homePage");
@@ -42,6 +42,7 @@
             }
         });
         </script>
+        
         
 </body>
 </html>
