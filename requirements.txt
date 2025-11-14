@@ -8,3 +8,4 @@ flask_sqlalchemy
 Flask_SQLAlchemy
 Flask_Login
 Flask_Migrate
+flask-wtf
