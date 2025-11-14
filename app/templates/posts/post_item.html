@@ -1,0 +1,67 @@
+<!-- posts/templates/posts/index.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>投稿一覧</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>投稿一覧</h1>
+        <nav>
+            {% if current_user.is_authenticated %}
+                <span>{{ current_user.username }} さん</span>
+                <a href="{{ url_for('auth.logout') }}">ログアウト</a>
+                <p><a href="{{ url_for('post.create_post') }}">＋ 新規投稿</a></p>
+
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">ログイン</a>
+                <a href="{{ url_for('auth.register') }}">登録</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% for post in posts %}
+        <div class="post-item" data-post-id="{{ post.id }}" id="post-{{ post.id }}">
+            <p><strong>{{ post.user.username }}</strong> - {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.content }}</p>
+            {% if post.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' ~ post.image_filename) }}" alt="投稿画像" style="max-width:300px;">
+            {% endif %}
+
+            <!-- いいねボタン -->
+            <button class="like-btn" data-post-id="{{ post.id }}">
+                <span class="heart {% if current_user.is_authenticated and post.likes|selectattr('user_id','equalto',current_user.id)|list %}liked{% endif %}">❤</span>
+                <span class="like-count">{{ post.likes|length }}</span>
+            </button>
+
+            <!-- コメント一覧 -->
+            <div class="comments">
+                <h4>コメント</h4>
+                {% for comment in post.comments %}
+                    <p><b>{{ comment.user.username }}:</b> {{ comment.content }}</p>
+                {% else %}
+                    <p>まだコメントはありません。</p>
+                {% endfor %}
+            </div>
+
+            <!-- コメントフォーム -->
+            {% if current_user.is_authenticated %}
+            <form class="comment-form" data-post-id="{{ post.id }}" method="POST">
+                <input type="text" name="content" placeholder="コメントを書く" required>
+                <button type="submit">投稿</button>
+            </form>
+            {% endif %}
+        </div>
+        <hr>
+        {% else %}
+        <p>投稿はまだありません。</p>
+        {% endfor %}
+    </main>
+
+    <script src="{{ url_for('static', filename='posts.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>投稿一覧</title>
+    {% if current_user.is_authenticated %}
+        <p><a href="{{ url_for('post.create_post') }}">＋ 新規投稿</a></p>
+    {% else %}
+        <p><a href="{{ url_for('auth.login') }}">ログインして投稿する</a></p>
+    {% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/post.js') }}"></script>
+
+    <style>
+        body { font-family: sans-serif; margin: 40px; }
+        .post { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 10px; }
+        .heart { color: gray; cursor: pointer; transition: 0.3s; }
+        .heart.liked { color: red; transform: scale(1.3); }
+        .comment-box { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    {% for post in posts %}
+    <div class="post" data-id="{{ post.id }}">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.content }}</p>
+        <p>投稿者: {{ post.user.username }}</p>
+
+        <!-- いいね -->
+        <button class="like-btn" data-post-id="{{ post.id }}">
+            <span class="heart {% if current_user.is_authenticated and post.likes|selectattr('user_id', 'equalto', current_user.id)|list %}liked{% endif %}">❤</span>
+            <span class="like-count">{{ post.likes|length }}</span>
+        </button>
+
+        <!-- コメント欄 -->
+        <div class="comment-box">
+            <form class="comment-form" data-post-id="{{ post.id }}">
+                <input type="text" name="content" placeholder="コメントを書く" required>
+                <button type="submit">送信</button>
+            </form>
+
+            <div class="comments">
+                {% for c in post.comments %}
+                <p><b>{{ c.user.username }}:</b> {{ c.content }}</p>
+                {% else %}
+                <p>まだコメントはありません。</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</body>
+</html>

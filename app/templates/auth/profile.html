@@ -1,0 +1,107 @@
+{% extends "auth/base.html" %}
+
+{% block content %}
+<div class="container profile-container mt-5 position-relative">
+
+    <!-- 設定ボタン（右上） -->
+    {% if current_user.is_authenticated and current_user.id == user.id %}
+    <div class="profile-settings dropdown position-absolute top-0 end-0 mt-3 me-3">
+        <button class="btn btn-light dropdown-toggle" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="{{ url_for('static', filename='icons/settings.png') }}" alt="設定" width="30" height="30">
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+            <li class="dropdown-header text-muted">アカウント情報</li>
+            <li class="dropdown-item-text">
+                <strong>メールアドレス:</strong><br>{{ user.email }}
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a href="{{ url_for('auth.edit_profile') }}">プロフィール編集 / パスワード変更</a></li>
+            <!-- 存在しない toggle_visibility は削除 -->
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">ログアウト</a></li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- プロフィールヘッダー -->
+    <div class="profile-header d-flex align-items-center mb-4">
+        <div class="profile-left">
+            <img src="{{ url_for('static', filename='icons/' + (user.icon or 'default.png')) }}" alt="icon" class="profile-avatar">
+        </div>
+        <div class="profile-right flex-grow-1 ms-3">
+            <div class="profile-username mb-2">{{ user.username }}</div>
+            <div class="follow-info mb-2">
+                <span class="follow-link me-3" data-bs-toggle="modal" data-bs-target="#followingModal">
+                    フォロー: {{ user.followed.count() }}
+                </span>
+                <span class="follow-link" data-bs-toggle="modal" data-bs-target="#followersModal">
+                    フォロワー: {{ user.followers.count() }}
+                </span>
+            </div>
+
+            {% if current_user.is_authenticated and current_user.id == user.id %}
+                <a href="{{ url_for('auth.edit_profile') }}" class="edit-btn mt-2">プロフィール編集</a>
+            {% endif %}
+
+            {% if current_user.is_authenticated and current_user.id != user.id %}
+                <form method="POST" action="{{ url_for('auth.follow' if not current_user.is_following(user) else 'auth.unfollow', user_id=user.id) }}">
+                    {{ csrf_token() }}
+                    <button type="submit" class="follow-btn mt-2">
+                        {{ 'フォロー解除' if current_user.is_following(user) else 'フォローする' }}
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- プロフィール情報 -->
+    <div class="profile-bio mb-3">
+        <strong>自己紹介:</strong><br>
+        {{ user.bio or '自己紹介はまだ書かれていません。' }}
+    </div>
+
+    <!-- フォロワー/フォロー モーダル -->
+    <div class="modal fade" id="followersModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">フォロワー</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    {% for u in user.followers %}
+                        <a href="{{ url_for('auth.profile', user_id=u.id) }}" class="d-flex align-items-center mb-2">
+                            <img src="{{ url_for('static', filename='icons/' + (u.icon or 'default.png')) }}" class="list-icon me-2">
+                            {{ u.username }}
+                        </a>
+                    {% else %}
+                        <p>フォロワーはいません。</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="followingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">フォロー中</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    {% for u in user.followed %}
+                        <a href="{{ url_for('auth.profile', user_id=u.id) }}" class="d-flex align-items-center mb-2">
+                            <img src="{{ url_for('static', filename='icons/' + (u.icon or 'default.png')) }}" class="list-icon me-2">
+                            {{ u.username }}
+                        </a>
+                    {% else %}
+                        <p>フォローしているユーザーはいません。</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

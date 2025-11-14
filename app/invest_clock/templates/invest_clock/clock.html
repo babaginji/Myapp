@@ -9,69 +9,69 @@
 <body class="light-theme">
     <div class="container">
 
-    <!-- 生年月日入力ボックス -->
-    <div id="birthdayBox" class="birthday-box">
-        <div class="box-title">生年月日</div>
-        <div class="select-row">
-            <select id="birthYear"></select>
-            <select id="birthMonth"></select>
-            <select id="birthDay"></select>
-        </div>
-        <button id="saveBirthdayBtn">保存</button>
+        <!-- 生年月日入力ボックス -->
+        <div id="birthdayBox" class="birthday-box">
+            <div class="box-title">生年月日</div>
+            <div class="select-row">
+                <select id="birthYear"></select>
+                <select id="birthMonth"></select>
+                <select id="birthDay"></select>
+            </div>
+            <button id="saveBirthdayBtn">保存</button>
 
-        <div class="theme-switch">
-            <span id="lightBtn" class="theme-btn">□</span>
-            <span id="darkBtn" class="theme-btn">■</span>
+            <div class="theme-switch">
+                <span id="lightBtn" class="theme-btn">□</span>
+                <span id="darkBtn" class="theme-btn">■</span>
+            </div>
+
+            <button id="showExplanationBtn">複利時計とは</button>
+
+            <div class="toggle-section">
+                <button class="toggle-btn" data-target="appTitle">複利時計</button>
+                <button class="toggle-btn" data-target="timeValue">人的資本</button>
+                <button class="toggle-btn" data-target="coinContainer">コイン</button>
+                <button class="toggle-btn" data-target="totalValue">人的資本の累計</button>
+            </div>
         </div>
 
-        <button id="showExplanationBtn">複利時計とは</button>
+        <h1 id="appTitle">複利時計</h1>
+        <div id="birthdayToggle" class="birthday-toggle">○</div>
+        <h1 id="timeValue">人的資本: ¥0 /h</h1>
 
-        <div class="toggle-section">
-            <button class="toggle-btn" data-target="appTitle">複利時計</button>
-            <button class="toggle-btn" data-target="timeValue">人的資本</button>
-            <button class="toggle-btn" data-target="coinContainer">コイン</button>
-            <button class="toggle-btn" data-target="totalValue">人的資本の累計</button>
+        <div class="clock-wrapper">
+            <canvas id="clockCanvas" width="320" height="320"></canvas>
+            <div id="coinContainer"></div>
         </div>
-        
+
+        <h2 id="totalValue">人的資本の累計: ¥0</h2>
+
+        <div id="explanationBox" class="explanation-box">
+            <h3>複利時計の説明</h3>
+            <p>
+                複利時計は、あなたの現在の人的資本（1時間あたりの価値）を、84歳時点まで複利運用した場合にいくらになるかを表示する時計です。<br>
+                誕生日を入力すると、年齢と日数をもとに現在価値を計算します。<br>
+                時計の下には、人的資本の増加を1秒ごとに視覚化したコインアニメーションがあります。
+            </p>
+        </div>
+
     </div>
 
-    <h1 id="appTitle">複利時計</h1>
-    <div id="birthdayToggle" class="birthday-toggle">○</div>
-    <h1 id="timeValue">人的資本: ¥0 /h</h1>
+    <footer>
+        <nav class="bottom-nav">
+            <a href="#" id="homeBtn">ホーム</a>
+            <a href="#">探す</a>
+            <a href="{{ url_for('post.create_post') }}">投稿</a>
+            <a href="#">ポートフォリオ</a>
+            <a href="{{ url_for('auth.profile') }}">プロフィール</a>
+        </nav>
+    </footer>
 
-    <div class="clock-wrapper">
-        <canvas id="clockCanvas" width="320" height="320"></canvas>
-        <div id="coinContainer"></div>
-    </div>
+    <!-- CSS読み込み -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='clock.css') }}">
 
-    <h2 id="totalValue">人的資本の累計: ¥0</h2>
-
-    <div id="explanationBox" class="explanation-box">
-        <h3>複利時計の説明</h3>
-        <p>
-            複利時計は、あなたの現在の人的資本（1時間あたりの価値）を、84歳時点まで複利運用した場合にいくらになるかを表示する時計です。<br>
-            誕生日を入力すると、年齢と日数をもとに現在価値を計算します。<br>
-            時計の下には、人的資本の増加を1秒ごとに視覚化したコインアニメーションがあります。
-        </p>
-    </div>
-
-</div>
-<footer>
-    <nav class="bottom-nav">
-        <a href="#" id="homeBtn">ホーム</a>
-        <a href="#">探す</a>
-        <a href="#">投稿</a>
-        <a href="#">ポートフォリオ</a>
-        <a href="#">プロフィール</a>
-    </nav>
-</footer>
-
-<!-- CSS読み込み -->
-<link rel="stylesheet" href="{{ url_for('static', filename='clock.css') }}">
-
-<!-- JS -->
+    <!-- JS -->
     <script>
-    // ---------------------------
+        // ---------------------------
         // 定数設定
         // ---------------------------
         const TARGET_AGE = 84;
@@ -167,8 +167,7 @@
         function hideExplanationBox() { 
             document.getElementById('explanationBox').style.display='none'; 
         }
-        
-        
+
         // 表示/非表示切替
         document.querySelectorAll('.toggle-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -186,6 +185,7 @@
                 }
             });
         });
+
         // ---------------------------
         // 外部クリックでボックス非表示
         // ---------------------------
@@ -217,6 +217,7 @@
                 drawTime(ctx, radius);
             }, 1000);
         }
+
         function drawFace(ctx, radius){
             ctx.clearRect(-radius, -radius, radius*2, radius*2);
             ctx.beginPath();
@@ -379,10 +380,6 @@
                 localStorage.removeItem("homePage");
             }
         });
-        </script>
-        
+    </script>
 </body>
 </html>
-
-
-

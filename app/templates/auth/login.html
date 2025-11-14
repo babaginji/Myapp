@@ -1,0 +1,32 @@
+{% extends "auth/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">ログイン</h2>
+
+    <form method="POST" class="mx-auto" style="max-width: 400px;">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ form.email.label(class_="form-label") }}
+            {{ form.email(class_="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.password.label(class_="form-label") }}
+            {{ form.password(class_="form-control") }}
+        </div>
+
+        <div class="d-grid">
+            {{ form.submit(class_="btn btn-primary") }}
+        </div>
+    </form>
+
+    <p class="text-center mt-3">
+        <a href="{{ url_for('auth.register') }}">新規登録はこちら</a>
+    </p>
+    <p class="text-center mt-1">
+        <a href="{{ url_for('auth.reset_request') }}">パスワードを忘れた方はこちら</a>
+    </p>
+</div>
+{% endblock %}

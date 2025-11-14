@@ -1,0 +1,59 @@
+
+/* ---------- いいねボタン ---------- */
+.like-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: transform 0.2s;
+}
+
+.like-btn:active {
+    transform: scale(1.2); /* 押した瞬間ちょっと拡大 */
+}
+
+/* ---------- ハート ---------- */
+.heart {
+    color: #aaa; /* 未いいねは灰色 */
+    transition: transform 0.2s, color 0.2s;
+}
+
+.heart.liked {
+    color: red; /* いいねしたら赤色 */
+    transform: scale(1.5);
+}
+
+.heart.animate {
+    animation: pop 0.3s forwards;
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.7); }
+    100% { transform: scale(1); }
+}
+
+/* ---------- コメント ---------- */
+.comments {
+    margin-top: 10px;
+    padding-left: 10px;
+    border-left: 2px solid #ddd;
+}
+
+.comments p {
+    margin: 5px 0;
+}
+
+/* ---------- コメントフォーム ---------- */
+.post-item form input[type="text"] {
+    width: 80%;
+    padding: 5px;
+}
+
+.post-item form button {
+    padding: 5px 10px;
+    cursor: pointer;
+}

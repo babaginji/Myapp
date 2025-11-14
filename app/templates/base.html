@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}MyApp{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+        <!-- 自作CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <!-- feed用CSSも読み込む -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='feed.css') }}">
+    </head>
+    
+<body>
+    <!-- ナビバー -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('post.index') }}">I comunication</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.profile') }}">プロフィール</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.edit_profile') }}">編集</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">ログアウト</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">ログイン</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">新規登録</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+        <!-- コンテンツ -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- フッター（常時表示） -->
+    <footer>
+        <nav class="bottom-nav d-flex justify-content-around py-2 border-top bg-light">
+            <a href="#" id="homeBtn">ホーム</a>
+            <a href="#">探す</a>
+            <a href="{{ url_for('post.index') }}">投稿</a>
+            <a href="#">ポートフォリオ</a>
+            <a href="{{ url_for('auth.profile') }}">プロフィール</a>
+        </nav>
+    </footer>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ホームボタン挙動 -->
+    <script>
+        const homeBtn = document.getElementById("homeBtn");
+
+        homeBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            const path = window.location.pathname;
+            // feed に戻す
+            window.location.href = "{{ url_for('feed.feed_home') }}";
+        });
+    </script>
+
+</body>
+</html>

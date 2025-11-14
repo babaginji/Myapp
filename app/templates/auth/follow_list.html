@@ -1,0 +1,33 @@
+{% extends "auth/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">{{ title }}</h1>
+
+    {% if users %}
+        <ul class="list-group">
+            {% for u in users %}
+                <li class="list-group-item d-flex align-items-center">
+                    {% if u.icon %}
+                        <img src="{{ url_for('static', filename='icons/' ~ u.icon) }}" class="list-icon me-2">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='icons/default.png') }}" class="list-icon me-2">
+                    {% endif %}
+
+                    <!-- プロフィールページリンク -->
+                    <a href="{{ url_for('auth.profile', user_id=u.id) }}">{{ u.username }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>該当するユーザーはいません。</p>
+    {% endif %}
+
+    <div class="mt-3">
+        <!-- 自分のプロフィールへ戻る -->
+        <a href="{{ url_for('auth.profile', user_id=current_user.id) }}" class="btn btn-primary">
+            自分のプロフィールに戻る
+        </a>
+    </div>
+</div>
+{% endblock %}

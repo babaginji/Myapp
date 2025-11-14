@@ -2,62 +2,61 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title or 'AI投資診断' }}</title>
+    <title>{{ title or 'Auth' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='ai.css') }}">
+
+    <!-- CSS 読み込み -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='feed.css') }}">
 </head>
 <body>
     <div class="container">
         {% block content %}{% endblock %}
     </div>
+
     <footer>
         <nav class="bottom-nav">
             <a href="#" id="homeBtn">ホーム</a>
             <a href="#">探す</a>
             <a href="{{ url_for('post.create_post') }}">投稿</a>
             <a href="#">ポートフォリオ</a>
-            <a href="{{ url_for('auth.profile') }}">プロフィール</a>
+            <a href="#">プロフィール</a>
         </nav>
     </footer>   
+
     <script>
-        // ホームボタン
         const homeBtn = document.getElementById("homeBtn");
-        
+
         homeBtn.addEventListener("click", function(e) {
             e.preventDefault();
             const path = window.location.pathname;
-        
-            // AI診断のサブページなら feed に戻す
-            if (path.startsWith("/ai/") && !path.endsWith("/ai")) {
+
+            if (path.startsWith("/auth/") && !path.endsWith("/auth")) {
                 window.location.href = "{{ url_for('feed.feed_home') }}";
                 return;
             }
-        
+
             const saved = localStorage.getItem("homePage");
-        
+
             if (saved && saved !== window.location.pathname) {
                 window.location.href = saved;
             } else {
                 window.location.href = "{{ url_for('feed.feed_home') }}";
             }
         });
-        
-        // ページを開いたときに homePage を更新
+
         document.addEventListener("DOMContentLoaded", function() {
             const path = window.location.pathname;
             const ref = document.referrer;
-        
-            // referrer が feed かホームなら homePage を更新
+
             if (ref.includes("/feed") || ref === window.location.origin + "/") {
                 localStorage.setItem("homePage", path);
             }
-        
-            // feed の場合は homePage を消す
+
             if (path.includes("/feed")) {
                 localStorage.removeItem("homePage");
             }
         });
-        </script>
-        
+    </script>
 </body>
 </html>

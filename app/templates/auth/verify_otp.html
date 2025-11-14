@@ -1,0 +1,21 @@
+{% extends "auth/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 style="text-align:center; margin-bottom:20px;">メール認証コード入力</h2>
+    <p>メールに送信された6桁のコードを入力してください。</p>
+
+    <form method="POST">
+        <label for="otp">認証コード</label>
+        <input type="text" id="otp" name="code" maxlength="6" required>
+        <button type="submit">認証</button>
+    </form>
+
+    <div class="auth-links">
+        <!-- Blueprint を使っている場合は 'auth.reset_request' にする -->
+        <a href="{{ url_for('auth.reset_request') }}">コードを再送する</a>
+        <!-- ログインページへのリンクも追加可能 -->
+        <a href="{{ url_for('auth.login') }}">ログインページに戻る</a>
+    </div>
+</div>
+{% endblock %}

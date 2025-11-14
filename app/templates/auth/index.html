@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-3">I comunication へようこそ！📚💰</h1>
+    <p class="mb-4">
+        未来のあなたの資産、ここからスタート。<br>
+        仲間と一緒に学び、増やす、投資の新しい冒険へようこそ！<br>
+        あなたも今日から投資コミュニティの仲間入り！<br>
+        たくさんの仲間と一緒に、ワクワクする資産づくりを始めよう!
+    </p>
+
+    <!-- ログイン・登録リンク -->
+    <div class="auth-links text-center">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('auth.profile', user_id=current_user.id) }}" class="btn btn-primary me-2">マイプロフィール</a>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">ログアウト</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary me-2">ログイン</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-success">新規登録</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
