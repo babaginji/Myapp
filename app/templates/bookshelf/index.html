@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>投資本棚</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bookshelf.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+</head>
+<body>
+    <!-- 検索窓 + 履歴ボックスをまとめてラップ -->
+        <div id="search-wrapper" style="position: relative;">
+            <div id="search-panel">
+                <input type="text" id="title" placeholder="本のタイトルを検索">
+                <button onclick="searchBook()">検索</button>
+            </div>
+            <!-- 検索履歴ボックスはここ -->
+            <div id="search-history-box" style="display:none; position: absolute; top: 100%; left: 0; width: 65%; margin: 0 8px 0 8px; z-index: 1000;"></div>
+        </div>
+
+        <!-- 棚リンク -->
+        <div class="shelf-links">
+            <div class="shelf-link">
+                <a href="{{ url_for('bookshelf.shelf_page', name='私の本棚') }}">私の本棚</a>
+
+            </div>
+            {% for shelf in shelves %}
+            {% if shelf != "私の本棚" %}
+            <div class="shelf-link">
+                <a href="{{ url_for('bookshelf.shelf_page', name=shelf) }}">{{ shelf }}</a>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        </div>
+
+        <!-- 検索結果表示（端いっぱいに広げる） -->
+        <div id="search-results-wrapper">
+            <div id="search-results" class="books-container"></div>
+        </div>
+        <div class="library-section">
+            <!-- 上段：見出し + リーカルリンク -->
+        <div id="nearby-libraries-wrapper">
+            <div class="library-header">
+                <h2>近くの図書館</h2>
+                <a href="https://calil.jp/" target="_blank" class="library-link">カーリル検索</a>
+            </div>
+        </div>
+            <!-- 下段：図書館リンク -->
+            <div id="library-results" class="library-links-container"></div>
+        </div>
+        
+        
+        
+        <h2>閲覧履歴</h2>
+        <div id="view-history-wrapper">
+            <div id="view-history">
+            <!-- .book が並ぶ -->
+            </div>
+        </div>
+        <h2>あなたにおすすめ</h2>
+        <div id="recommend-books" class="books-container"></div>
+        
+            
+        <script>
+            // -----------------------------
+            // グローバル変数
+            // -----------------------------
+            let searchResults = []; // 現在の検索結果
+            let myShelf = [];       // 「私の本棚」にある本のリスト
+        
+            // -----------------------------
+            // localStorage 関連関数
+            // -----------------------------
+            function saveShelfLocal() {
+                localStorage.setItem("myShelf", JSON.stringify(myShelf));
+            }
+        
+            function loadShelfLocal() {
+                return JSON.parse(localStorage.getItem("myShelf") || "[]");
+            }
+        
+            // -----------------------------
+            // 検索履歴管理
+            // -----------------------------
+            function getHistory() {
+                return JSON.parse(localStorage.getItem("searchHistory") || "[]");
+            }
+        
+            function saveHistory(history) {
+                localStorage.setItem("searchHistory", JSON.stringify(history));
+            }
+        
+            function addHistory(title) {
+                let history = getHistory();
+                history = history.filter(item => item !== title);
+                history.unshift(title);
+                if (history.length > 20) history = history.slice(0, 20);
+                saveHistory(history);
+                displayHistory();
+            }
+        
+            function deleteHistory(title) {
+                let history = getHistory().filter(item => item !== title);
+                saveHistory(history);
+                displayHistory();
+            }
+        
+            function displayHistory() {
+                const box = document.getElementById("search-history-box");
+                const input = document.getElementById("title");
+                const history = getHistory();
+        
+                if (history.length === 0 || document.activeElement !== input) {
+                    box.style.display = "none";
+                    return;
+                }
+        
+                box.style.display = "block";
+                box.innerHTML = "";
+        
+                history.forEach(item => {
+                    const div = document.createElement("div");
+                    div.className = "history-item";
+        
+                    const span = document.createElement("span");
+                    span.className = "history-title";
+                    span.textContent = item;
+                    span.onclick = () => {
+                        input.value = item;
+                        searchBook();
+                        box.style.display = "none";
+                    };
+        
+                    const btn = document.createElement("button");
+                    btn.className = "delete-btn";
+                    btn.textContent = "×";
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        deleteHistory(item);
+                    };
+        
+                    div.appendChild(span);
+                    div.appendChild(btn);
+                    box.appendChild(div);
+                });
+            }
+        
+            // -----------------------------
+            // 「私の本棚」表示
+            // -----------------------------
+            function updateMyShelfDisplay() {
+                const shelfDiv = document.getElementById("my-shelf-books");
+                if (!shelfDiv) return;
+                shelfDiv.innerHTML = "";
+        
+                myShelf.forEach(book => {
+                    const bookDiv = document.createElement("div");
+                    bookDiv.className = "book";
+        
+                    const star = document.createElement("span");
+                    star.className = "star";
+                    star.textContent = "★";
+                    star.style.cursor = "pointer";
+                    star.onclick = () => {
+                        const index = myShelf.findIndex(b => b.title === book.title);
+                        if (index !== -1) myShelf.splice(index, 1);
+                        saveShelfLocal();
+                        updateMyShelfDisplay();
+                        displaySearchResults();
+                    };
+        
+                    const imgLink = document.createElement("a");
+                    imgLink.href = book.itemUrl;
+                    imgLink.target = "_blank";
+        
+                    const img = document.createElement("img");
+                    img.src = book.image;
+                    img.alt = book.title;
+                    imgLink.appendChild(img);
+        
+                    bookDiv.appendChild(imgLink);
+                    bookDiv.appendChild(star);
+        
+                    const details = document.createElement("div");
+                    details.className = "book-details";
+                    details.innerHTML = `
+                        <p>価格: ¥${book.price}</p>
+                        <p>著者: ${book.author}</p>
+                    `;
+                    bookDiv.appendChild(details);
+        
+                    shelfDiv.appendChild(bookDiv);
+                });
+            }
+        
+            // -----------------------------
+            // 本検索の結果を統一形式に変換
+            // -----------------------------
+            function normalizeBook(rawBook) {
+                return {
+                    title: rawBook.title || "",
+                    author: rawBook.author || "",
+                    price: rawBook.price || "情報なし",
+                    image: rawBook.image || rawBook.cover || "",
+                    itemUrl: rawBook.itemUrl || rawBook.url || "#",
+                    isbn: rawBook.isbn || "",
+                };
+            }
+        
+            
+// -----------------------------
+// 図書館情報取得（検索結果下に横スクロールでまとめて表示）
+// -----------------------------
+async function fetchNearbyLibraries(title) {
+    const containerDiv = document.getElementById("library-results");
+    if (!navigator.geolocation) {
+        containerDiv.innerHTML = "<p>位置情報を取得できません。</p>";
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+
+        try {
+            const res = await fetch(`/search?title=${encodeURIComponent(title)}&lat=${userLat}&lon=${userLon}`);
+            const books = await res.json();
+            if (!books || books.length === 0) {
+                containerDiv.innerHTML = "<p>本が見つかりません。</p>";
+                return;
+            }
+
+            // 図書館を重複させずにまとめる
+            const libMap = {};
+            books.forEach(book => {
+                if (book.libraries && book.libraries.length > 0) {
+                    book.libraries.forEach(lib => {
+                        if (!lib.name) return;
+                        if (!libMap[lib.name]) {
+                            if (lib.lat && lib.lon) {
+                                lib.distance = getDistance(userLat, userLon, lib.lat, lib.lon);
+                            } else {
+                                lib.distance = Infinity;
+                            }
+                            libMap[lib.name] = lib;
+                        }
+                    });
+                }
+            });
+
+            const libraries = Object.values(libMap);
+            if (libraries.length === 0) {
+                containerDiv.innerHTML = "<p>近くの図書館情報がありません。</p>";
+                return;
+            }
+
+            // 距離順にソート
+            libraries.sort((a, b) => a.distance - b.distance);
+
+            // 横スクロール用ラッパー
+            const wrapperDiv = document.createElement("div");
+            wrapperDiv.className = "shelf-links"; // 横スクロール親
+            wrapperDiv.style.display = "flex";     // ←これで横並び
+            wrapperDiv.style.overflowX = "auto";
+            wrapperDiv.style.gap = "10px";         // アイテム間隔
+            containerDiv.innerHTML = "";
+            containerDiv.appendChild(wrapperDiv);
+
+            libraries.forEach(lib => {
+                const libDiv = document.createElement("div");
+                libDiv.className = "shelf-link";
+                libDiv.style.flex = "0 0 auto"; // ←これで横スクロール内で縦にならない
+
+                const mapUrl = (lib.lat && lib.lon)
+                    ? `https://www.google.com/maps/search/?api=1&query=${lib.lat},${lib.lon}`
+                    : "#";
+
+                let displayName = lib.name;
+                if (!displayName.includes("図書館")) {
+                    displayName += "図書館";
+                }
+
+                libDiv.innerHTML = `
+                    📚 <a href="${mapUrl}" target="_blank" class="library-item-link">${displayName}</a>
+                    (${lib.distance !== Infinity ? lib.distance.toFixed(1) + " km" : "-"})
+                `;
+                wrapperDiv.appendChild(libDiv);
+            });
+
+        } catch (err) {
+            console.error(err);
+            containerDiv.innerHTML = "<p>図書館情報の取得に失敗しました。</p>";
+        }
+
+    }, (err) => {
+        containerDiv.innerHTML = "<p>位置情報の取得に失敗しました。</p>";
+    });
+}
+
+// -----------------------------
+// 距離計算関数（km単位）
+// -----------------------------
+function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // 地球半径 km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+
+// -----------------------------
+// 検索結果表示
+// -----------------------------
+function displaySearchResults() {
+    const resultsDiv = document.getElementById("search-results");
+    if (!resultsDiv) return;
+    resultsDiv.innerHTML = "";
+
+    searchResults.forEach(rawBook => {
+        const book = normalizeBook(rawBook);
+
+        // 新しい本なら window.allBooks に追加
+        if (!window.allBooks.find(b => b.title === book.title)) {
+            window.allBooks.push(book);
+        }
+
+        const bookDiv = document.createElement("div");
+        bookDiv.className = "book";
+        bookDiv.style.display = "flex";
+        bookDiv.style.flexDirection = "column";
+        bookDiv.style.alignItems = "center";
+
+        // ⭐マーク
+        const star = document.createElement("span");
+        star.className = "star";
+        star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
+        star.style.cursor = "pointer";
+        star.onclick = () => {
+            const index = myShelf.findIndex(b => b.title === book.title);
+            if (index === -1) myShelf.push(book);
+            else myShelf.splice(index, 1);
+            saveShelfLocal();
+            updateMyShelfDisplay();
+            displaySearchResults();
+        };
+
+        // 画像リンク
+        const imgLink = document.createElement("a");
+        imgLink.href = book.itemUrl;
+        imgLink.target = "_blank";
+        imgLink.onclick = () => addToViewHistory(book);
+
+        const img = document.createElement("img");
+        img.src = book.image;
+        img.alt = book.title;
+        imgLink.appendChild(img);
+
+        bookDiv.appendChild(imgLink);
+        bookDiv.appendChild(star);
+
+        // 本の詳細（初期非表示）
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "book-details";
+        detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
+        bookDiv.appendChild(detailsDiv);
+
+        // トグルボタン
+        const toggleBtn = document.createElement("span");
+        toggleBtn.className = "toggle-btn";
+        toggleBtn.textContent = "↑↓";
+        toggleBtn.onclick = () => {
+            detailsDiv.classList.toggle("show");
+        };
+        bookDiv.appendChild(toggleBtn);
+
+        resultsDiv.appendChild(bookDiv);
+    });
+
+    // 閲覧履歴に基づくおすすめを更新
+    displayRecommendedBooksByKeywords();
+
+    // 検索結果下に図書館情報を表示
+    if (searchResults.length > 0) fetchNearbyLibraries(searchResults[0].title);
+}
+
+// -----------------------------
+// あなたにおすすめ（タイトルと著者でキーワードマッチ）
+// -----------------------------
+function displayViewHistory() {
+    const historyDiv = document.getElementById("view-history");
+    if (!historyDiv) return;
+    historyDiv.innerHTML = "";
+
+    const history = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+    if (history.length === 0) return;
+
+    // 横スクロール用ラッパー
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.overflowX = "auto";
+    wrapper.style.gap = "10px"; // 本同士の間隔
+
+    history.forEach(book => {
+        const bookDiv = document.createElement("div");
+        bookDiv.className = "book";
+        bookDiv.style.flex = "0 0 auto"; // 横並びで縦に広がらない
+        bookDiv.style.display = "flex";
+        bookDiv.style.flexDirection = "column";
+        bookDiv.style.alignItems = "center";
+
+        const imgLink = document.createElement("a");
+        imgLink.href = book.itemUrl;
+        imgLink.target = "_blank";
+
+        const img = document.createElement("img");
+        img.src = book.image;
+        img.alt = book.title;
+        imgLink.appendChild(img);
+        bookDiv.appendChild(imgLink);
+
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "book-details";
+        detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
+        bookDiv.appendChild(detailsDiv);
+
+        wrapper.appendChild(bookDiv);
+    });
+
+    historyDiv.appendChild(wrapper);
+}
+
+// -----------------------------
+// ページ読み込み時
+// -----------------------------
+window.addEventListener("DOMContentLoaded", () => {
+    displayViewHistory();
+    displayRecommendedBooksByKeywords();
+});
+
+            // -----------------------------
+            // 閲覧履歴機能
+            // -----------------------------
+            function addToViewHistory(book) {
+                let history = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+        
+                if (!history.find(b => b.title === book.title)) {
+                    history.unshift(book);
+                    if (history.length > 20) history.pop();
+                }
+        
+                localStorage.setItem("viewHistory", JSON.stringify(history));
+                displayViewHistory();
+            }
+        
+            function displayViewHistory() {
+                const historyDiv = document.getElementById("view-history");
+                if (!historyDiv) return;
+                historyDiv.innerHTML = "";
+        
+                const history = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+        
+                history.forEach(book => {
+                    const bookDiv = document.createElement("div");
+                    bookDiv.className = "book";
+        
+                    const imgLink = document.createElement("a");
+                    imgLink.href = book.itemUrl;
+                    imgLink.target = "_blank";
+        
+                    const img = document.createElement("img");
+                    img.src = book.image;
+                    img.alt = book.title;
+        
+                    imgLink.appendChild(img);
+                    bookDiv.appendChild(imgLink);
+        
+                    const detailsDiv = document.createElement("div");
+                    detailsDiv.className = "book-details";
+                    detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
+                    bookDiv.appendChild(detailsDiv);
+        
+                    historyDiv.appendChild(bookDiv);
+                });
+            }
+        
+            // -----------------------------
+            // 本を検索
+            // -----------------------------
+            async function searchBook() {
+                const titleInput = document.getElementById("title");
+                const title = titleInput.value.trim();
+                if (!title) return;
+        
+                const res = await fetch(`/search?title=${encodeURIComponent(title)}`);
+                const books = await res.json();
+                searchResults = books;
+        
+                addHistory(title);
+                localStorage.setItem("lastSearch", JSON.stringify({ title, books }));
+                displaySearchResults();
+            }
+
+
+            // -----------------------------
+            // 初期ロード
+            // -----------------------------
+            window.onload = () => {
+                myShelf = loadShelfLocal();
+                updateMyShelfDisplay();
+        
+                const input = document.getElementById("title");
+                const historyBox = document.getElementById("search-history-box");
+        
+                const lastSearch = localStorage.getItem("lastSearch");
+                if (lastSearch) {
+                    const data = JSON.parse(lastSearch);
+                    input.value = data.title;
+                    searchResults = data.books;
+                    displaySearchResults();
+                }
+        
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") searchBook();
+                });
+        
+                input.addEventListener("focus", () => displayHistory());
+                input.addEventListener("input", () => displayHistory());
+        
+                historyBox.addEventListener("mousedown", (e) => e.preventDefault());
+        
+                document.addEventListener("click", (e) => {
+                    if (!input.contains(e.target) && !historyBox.contains(e.target)) {
+                        historyBox.style.display = "none";
+                    }
+                });
+        
+                displayViewHistory();
+            };
+        </script>
+        <script>
+            window.allBooks = [{
+      "author": "清原 達郎",
+      "description": "■話題沸騰　連続重版たちまち24万部突破！\n個人資産800億円超。長者番付1位となった伝説のサラリーマン投資家・清原達郎。\n咽頭がんで声帯を失い、引退を決めたいま、全人生で得た株式投資のノウハウを明かす\n■新NISA完全対応！　すべての投資家のバイブル誕生\n私には後継者がいない。ならばすべてのノウハウを全部世の中に「ぶちまけてしまえ」という気持ちになった。今や株式市場は「個人が自由に儲けることができる市場」です。2024年からは新NISAも始まりました。「やらなきゃ絶対損」という個人にとっては夢のような制度です。（本書より）\n■株式投資に才能など存在しない。「自分の失敗からどれだけ学んだか」だけだ。\n\n《目次》\n■第1章　市場はあなたを見捨てない\n　間違っても損をするとは限らない　正しかったら儲かるとは限らない／投資のアイデア=株価に織り込まれていないアイデア／すべての情報にはバイアスがかかっている／情報収集に金をかける必要はなし／投資家は相場に勝てるのか／パッシブ運用vs.アクティブ運用　ほか\n■第2章　ヘッジファンドへの長い道のり\n　野村證券入社──抱いた「強烈な違和感」／損をする個人投資家のパターン／北尾吉孝氏に救われる／軍曹／「腐れ玉」の行方／「ロング・ショート運用」の夜明け　ほか\n■第3章　「割安小型成長株」の破壊力\n　実は役に立たない「PBR」／キャッシュニュートラルPERの問題点／「1段階モデル」は低PER株に有効／金利が上がると、高PER株は不利？／「イメージの悪い業界」こそチャンス／バリュエーションの梯子を上る／資金100万円で「割安小型成長株」投資／「成長株投資」と「バリュー投資」の違い／マザーズ（グロース）は「最悪の市場」／「トレンドフォロワー」と「コントラリアン」　ほか\n■第4章　地獄の沙汰は持株次第─25年間の軌跡\n　K1ファンドの運用スタイルの変遷／ファンドのパフォーマンス　ほか\n■第5章　REIT─落ちてくるナイフを2度つかむ\n　まさかのIPO「20億円分」当選／リーマンショックとREIT暴落\n■第6章　実践のハイライト─ロング\n■第7章　実践のハイライト─ショート・ペアートレード\n　個人投資家には個別銘柄のショートは勧められない／ショートの分散投資はおろかな行為／日経225指数の闇／ようやくわかったショートの勝ち方　ほか\n■第8章　やってはいけない投資\n　ESG投資はナンセンス／未公開株は決して買ってはいけない　ほか\n■第9章これからの日本株市場\n　10年以内に起きる破滅的リスク／今後の日本株を取り巻く環境「8」の予想／縮小を続ける内需／日本株ショーテッジ時代の到来　ほか\n第1章　市場はあなたを見捨てない\n第2章　ヘッジファンドへの長い道のり\n第3章　「割安小型成長株」の破壊力\n第4章　地獄の沙汰は持株次第──25年間の軌跡\n第5章　REIT──落ちてくるナイフを2度つかむ\n第6章　実践のハイライト──ロング\n第7章　実践のハイライト──ショート・ペアートレード\n第8章　やってはいけない投資\n第9章　これからの日本株市場",
+      "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/0355/9784065350355_1_2.jpg?_ex=200x200",
+      "itemUrl": "https://books.rakuten.co.jp/rb/17770405/?rafcid=wsc_b_bs_1077795699367532233",
+      "price": 1980,
+      "title": "わが投資術　市場は誰に微笑むか"
+    },
+    {
+      "author": "ベンジャミン・グレアム",
+      "description": "『賢明なる投資家』の理解度が一気に進む秀逸な「解説」付き！投資本なかで最高傑作とだれもが認めるベンジャミン・グレアムの『賢明なる投資家』を、ウォール・ストリート・ジャーナルの傑出した金融ジャーナリストであるジェイソン・ツバイクが各章ごとに現代の市場に合わせて解説を加えたのが本書である。本書を読めば、グレアムが主張し続けてきた「バリュー投資」の奥義である「安全性分析（ｓｅｃｕｒｉｔｙ　ａｎａｌｙｓｉｓ）」という普遍的原則を投資にいかに適用し、実践するかが手に取るように分かる。",
+      "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3400/9784775973400_1_2.jpg?_ex=200x200",
+      "itemUrl": "https://books.rakuten.co.jp/rb/18327208/?rafcid=wsc_b_bs_1077795699367532233",
+      "price": 4180,
+      "title": "新　賢明なる投資家（下）第3版"
+    },
+    {
+      "author": "ベンジャミン・グレアム/ジェイソン・ツバイク",
+      "description": "本書は、投資に関する永久不滅の古典であり、安全性分析（ｓｅｃｕｒｉｔｙ　ａｎａｌｙｓｉｓ）の普遍的原則が詰め込まれているベンジャミン・グレアムの『賢明なる投資家』を元に（『賢明なる投資家』には一切手を加えていない）、ウォール・ストリート・ジャーナルの著名な投資ライターであるジェイソン・ツバイクが各章ごとに、現代の状況にマッチする形で最新の解説を書き下ろしたものである。また、伝説の投資家で、著者の最も有名で大成功した弟子であるウォーレン・バフェットも序文と付録を寄稿している。",
+      "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3394/9784775973394_1_2.jpg?_ex=200x200",
+      "itemUrl": "https://books.rakuten.co.jp/rb/18304478/?rafcid=wsc_b_bs_1077795699367532233",
+      "price": 4180,
+      "title": "新　賢明なる投資家（上）第3版"
+    },
+    {
+      "author": "ベンジャミン・グレアム/増沢和美",
+      "description": "待望！　日本初の「改訂第4版」を完全翻訳\nバフェットが師と仰ぎ、尊敬したベンジャミン・グレアムが残した「バリュー投資」の最高傑作！株式と債券の配分方法、だれも気づいていない将来伸びる「魅力のない二流企業株」や「割安株」の見つけ方を伝授！ 場中や、明日、1カ月後の値動きを全く気にしない「投資法」・・・原書は、今でもアメリカでロングセラーであり続けている古典的名著。数十年前から時代遅れな本といわれ続けながらも、やはり真理とは普遍的なものであり、人々に必要とされてきた書物である。ITバブルがはじけた今、バリュー投資を勉強したいと願う方には、バフェットの本とともに、お勧めしたい「投資家の教科書」である。",
+      "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9391/93910329.jpg?_ex=200x200",
+      "itemUrl": "https://books.rakuten.co.jp/rb/1320854/?rafcid=wsc_b_bs_1077795699367532233",
+      "price": 4180,
+      "title": "賢明なる投資家"
+    }
+  ];
+            
+            // 閲覧履歴に追加
+            function addToViewHistory(book) {
+                let history = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+                if (!history.find(b => b.title === book.title)) {
+                    history.unshift(book);
+                    if (history.length > 20) history.pop();
+                }
+                localStorage.setItem("viewHistory", JSON.stringify(history));
+                displayViewHistory();
+                displayRecommendedBooksByKeywords();
+            }
+            
+            // 閲覧履歴表示（既存のdisplayViewHistoryと同じ）
+            function displayViewHistory() {
+                const historyDiv = document.getElementById("view-history");
+                if (!historyDiv) return;
+                historyDiv.innerHTML = "";
+                const history = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+                history.forEach(book => {
+                    const bookDiv = document.createElement("div");
+                    bookDiv.className = "book";
+                    const imgLink = document.createElement("a");
+                    imgLink.href = book.itemUrl;
+                    imgLink.target = "_blank";
+                    const img = document.createElement("img");
+                    img.src = book.image;
+                    img.alt = book.title;
+                    imgLink.appendChild(img);
+                    bookDiv.appendChild(imgLink);
+                    const detailsDiv = document.createElement("div");
+                    detailsDiv.className = "book-details";
+                    detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
+                    bookDiv.appendChild(detailsDiv);
+                    historyDiv.appendChild(bookDiv);
+                });
+            }
+            
+            // あなたにおすすめ表示
+            function displayRecommendedBooksByKeywords() {
+    const recDiv = document.getElementById("recommend-books");
+    if (!recDiv) return;
+    recDiv.innerHTML = "";
+
+    const history = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+    if (history.length === 0) return;
+
+    const recBooks = [];
+    const allBooks = window.allBooks || [];
+
+    history.forEach(h => {
+        const hWords = (h.title + " " + h.author).toLowerCase().split(/\s+/);
+        allBooks.forEach(b => {
+            if (!history.find(x => x.title === b.title) && !recBooks.find(x => x.title === b.title)) {
+                const bWords = (b.title + " " + b.author).toLowerCase().split(/\s+/);
+                if (hWords.some(hw => bWords.some(bw => bw.includes(hw) || hw.includes(bw)))) {
+                    recBooks.push(b);
+                }
+            }
+        });
+    });
+
+    if (recBooks.length === 0) return;
+
+    // 横スクロール用 wrapper
+    const wrapperDiv = document.createElement("div");
+    wrapperDiv.style.display = "flex";
+    wrapperDiv.style.overflowX = "auto";
+    wrapperDiv.style.gap = "10px";
+    wrapperDiv.style.padding = "5px 0";
+
+    recBooks.slice(0, 10).forEach(book => {
+        const bookDiv = document.createElement("div");
+        bookDiv.className = "book";
+        bookDiv.style.flex = "0 0 auto"; // 横スクロールで縦にならない
+        bookDiv.style.width = "130px";   // 好きな幅に調整
+
+        const imgLink = document.createElement("a");
+        imgLink.href = book.itemUrl;
+        imgLink.target = "_blank";
+
+        const img = document.createElement("img");
+        img.src = book.image;
+        img.alt = book.title;
+        img.style.width = "100%";
+        imgLink.appendChild(img);
+        bookDiv.appendChild(imgLink);
+
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "book-details";
+        detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
+        bookDiv.appendChild(detailsDiv);
+
+        wrapperDiv.appendChild(bookDiv);
+    });
+
+    recDiv.appendChild(wrapperDiv);
+}
+
+            
+            // ページロード時に表示
+            window.addEventListener("DOMContentLoaded", () => {
+                displayViewHistory();
+                displayRecommendedBooksByKeywords();
+            });
+            </script>
+            
+</body>
+</html>
