@@ -1,68 +1,74 @@
 {% extends "ai_diagnosis/base.html" %}
 {% block content %}
-<div class="container">
-    <!-- ページめくり用オーバーレイ -->
-<div id="pageFlip" class="page-flip"></div>
-    <h1>診断結果</h1>
 
-    <!-- メイン・サブタイプ表示はそのまま -->
-    <!-- メインタイプ -->
-    <div class="result-box main-result">
-        <span class="type-label">メインタイプ</span>
-        <p class="type-name">{{ main_result }}</p>
-    </div>
-    <div class="description-container">
-        <p class="description" id="main-desc1">{{ main_desc1 }}</p>
-        <button class="toggle-btn" onclick="toggleDescription('main-desc1', this)">すべて見る ⇩</button>
-    </div>
-    <div class="description-container">
-        <p class="description" id="main-desc2">{{ main_desc2 }}</p>
-        <button class="toggle-btn" onclick="toggleDescription('main-desc2', this)">すべて見る ⇩</button>
-    </div>
-    
+<!-- 新規ラッパーを追加 -->
 
-    <!-- サブタイプ -->
-    <div class="result-box sub-result">
-        <span class="type-label">サブタイプ</span>
-        <p class="type-name">{{ sub_result }}</p>
-    </div>
-    <div class="description-container">
-        <p class="description" id="sub-desc1">{{ sub_desc1 }}</p>
-        <button class="toggle-btn" onclick="toggleDescription('sub-desc1', this)">すべて見る ⇩</button>
-    </div>
-    <div class="description-container">
-        <p class="description" id="sub-desc2">{{ sub_desc2 }}</p>
-        <button class="toggle-btn" onclick="toggleDescription('sub-desc2', this)">すべて見る ⇩</button>
-    </div>
-    
-
-    <h2>次に進むにはこちら</h2>
-<div class="next-steps">
-    <a href="{{ url_for('ai_diagnosis.result_books') }}" class="card">
-        <img src="{{ url_for('static', filename='images/books.jpg') }}" alt="本で学ぶ">
-        <p>本で学ぶ</p>
-    </a>
-
-    <a href="{{ url_for('ai_diagnosis.result_learning') }}" class="card">
-        <img src="{{ url_for('static', filename='images/learning.jpg') }}" alt="学習サイト">
-        <p>学習サイト</p>
-    </a>
-
-    <a href="{{ url_for('ai_diagnosis.result_start') }}" class="card">
-        <img src="{{ url_for('static', filename='images/start.jpeg') }}" alt="投資を始める">
-        <p>投資を始める</p>
-    </a>
-
-    <a href="#" class="card">
-        <img src="{{ url_for('static', filename='images/advice.jpg') }}" alt="投資アドバイス">
-        <p>アドバイス</p>
-    </a>
-    <!-- ページめくり用ラッパー -->
-<div id="swipePage" class="swipe-page"></div>
+<div class="ai-result-bg-wrapper">
+        <h1>診断結果</h1>
+    <!-- 背景キャラクター -->
+    <div class="ai-result-bg" 
+    style="background-image: url('{{ url_for('static', filename='images/' ~ main_result ~ '.jpg') }}');">
 </div>
 
-    
 
+    <!-- 既存コンテンツはそのまま -->
+    <div class="container">
+        <!-- ページめくり用オーバーレイ -->
+        <div id="pageFlip" class="page-flip"></div>
+
+        
+
+        <!-- メインタイプ -->
+        <div class="result-box main-result">
+            <span class="type-label">メインタイプ</span>
+            <p class="type-name">{{ main_result }}</p>
+        </div>
+        <div class="description-container">
+            <p class="description" id="main-desc1">{{ main_desc1 }}</p>
+            <button class="toggle-btn" onclick="toggleDescription('main-desc1', this)">すべて見る ⇩</button>
+        </div>
+        <div class="description-container">
+            <p class="description" id="main-desc2">{{ main_desc2 }}</p>
+            <button class="toggle-btn" onclick="toggleDescription('main-desc2', this)">すべて見る ⇩</button>
+        </div>
+
+        <!-- サブタイプ -->
+        <div class="result-box sub-result">
+            <span class="type-label">サブタイプ</span>
+            <p class="type-name">{{ sub_result }}</p>
+        </div>
+        <div class="description-container">
+            <p class="description" id="sub-desc1">{{ sub_desc1 }}</p>
+            <button class="toggle-btn" onclick="toggleDescription('sub-desc1', this)">すべて見る ⇩</button>
+        </div>
+        <div class="description-container">
+            <p class="description" id="sub-desc2">{{ sub_desc2 }}</p>
+            <button class="toggle-btn" onclick="toggleDescription('sub-desc2', this)">すべて見る ⇩</button>
+        </div>
+
+        <h2>次に進むにはこちら</h2>
+        <div class="next-steps">
+            <a href="{{ url_for('ai_diagnosis.result_books') }}" class="card">
+                <img src="{{ url_for('static', filename='images/books.jpg') }}" alt="本で学ぶ">
+                <p>本で学ぶ</p>
+            </a>
+            <a href="{{ url_for('ai_diagnosis.result_learning') }}" class="card">
+                <img src="{{ url_for('static', filename='images/learning.jpg') }}" alt="学習サイト">
+                <p>学習サイト</p>
+            </a>
+            <a href="{{ url_for('ai_diagnosis.result_start') }}" class="card">
+                <img src="{{ url_for('static', filename='images/start.jpeg') }}" alt="投資を始める">
+                <p>投資を始める</p>
+            </a>
+            <a href="#" class="card">
+                <img src="{{ url_for('static', filename='images/advice.jpg') }}" alt="投資アドバイス">
+                <p>アドバイス</p>
+            </a>
+        </div>
+
+        <div id="swipePage" class="swipe-page"></div>
+    </div>
+</div>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const descs = document.querySelectorAll(".description");

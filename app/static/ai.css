@@ -292,3 +292,33 @@ footer {
     text-decoration: none;
     color: #333;
 }
+
+
+/* ラッパー全体 */
+.ai-result-bg-wrapper {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* 背景キャラクター */
+.ai-result-bg {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;   /* キャラクター幅 */
+    height: 70%;    /* 上70%にキャラクター */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top center;
+    z-index: 0;
+    opacity: 1;
+}
+
+/* container は既存そのまま */
+.ai-result-bg-wrapper .container {
+    position: relative;
+    z-index: 1;
+    padding-top: 300px; /* キャラクター高さ分の余白 */
+}
