@@ -6,10 +6,12 @@
 <div class="ai-result-bg-wrapper">
 
     <!-- 背景キャラクター -->
-    <div class="ai-result-bg" 
-    style="background-image: url('{{ url_for('static', filename='images/' ~ main_result ~ '.jpg') }}');">
+    <div class="ai-result-bg-wrapper {{ main_result|lower }}">
+        <div class="ai-result-bg"
+            style="background-image: url('{{ url_for('static', filename='images/' ~ main_result ~ '.jpg') }}');">
+        </div>
     </div>
-
+    
 
     <!-- 既存コンテンツはそのまま -->
     <div class="container">

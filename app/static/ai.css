@@ -325,16 +325,16 @@ footer {
 
 .ai-result-bg-wrapper {
     position: relative;
-    min-height: 100vh;
+    min-height: 40vh;
     overflow: hidden;
-    padding-top: 400px; 
-    background-color: #faf7e9;/* ここでメインタイプを下にずらす */
+    padding-top: 10px; 
+    
 }
 
 
 .ai-result-bg {
     position: absolute;
-    top: -85%; /* 上に少しずらして下20%を重ねる */
+    top: 0%; /* 上に少しずらして下20%を重ねる */
     left: 50%;
     transform: translateX(-50%);
     width: 400px;   /* キャラクター幅 */
@@ -350,3 +350,10 @@ footer {
     z-index: 2;
     margin-top: 0; /* padding-topで調整したので margin-top は不要 */
 }
+.ai-result-bg-wrapper.貯蓄優先型 { background-color: #faf7e9; } /* ピンク系 */
+.ai-result-bg-wrapper.積立応用型（高配当株など） { background-color: #e3f2fd; } /* ブルー系 */
+.ai-result-bg-wrapper.ステーキング運用型（仮想通貨積立・ステーキング） { background-color: #e5dff0; } /* イエロー系 */
+.ai-result-bg-wrapper.アクティブチャレンジ型（短期トレード型） { background-color: #c1ddf7; } /* イエロー系 */
+.ai-result-bg-wrapper.テクノロジー志向型（仮想通貨プロジェクト投資・新興市場） { background-color: #e2e4f5; }
+.ai-result-bg-wrapper.株式アクティブ型（中期〜長期の個別株投資） { background-color: #d3e2ce; }
+.ai-result-bg-wrapper.積立安定型（インデックスメイン） { background-color: #a7dde7; }
