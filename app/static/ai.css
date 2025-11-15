@@ -294,31 +294,59 @@ footer {
 }
 
 
-/* ラッパー全体 */
 .ai-result-bg-wrapper {
     position: relative;
-    min-height: 100vh;
+    min-height: 40vh;
     overflow: hidden;
+     /* 画像下の背景色 */
 }
 
-/* 背景キャラクター */
+/* 背景キャラクターは上70%まで */
 .ai-result-bg {
     position: absolute;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 400px;   /* キャラクター幅 */
-    height: 70%;    /* 上70%にキャラクター */
+    width: 400px;      /* キャラクター幅 */
+    max-width: 90%;    /* 画面に合わせて縮小 */
+    height: 100vh;      /* ページの上70%まで */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: top center;
     z-index: 0;
-    opacity: 1;
 }
 
-/* container は既存そのまま */
-.ai-result-bg-wrapper .container {
+/* 文字や既存コンテンツはキャラクターの上に表示 */
+.ai-result-content {
     position: relative;
     z-index: 1;
-    padding-top: 300px; /* キャラクター高さ分の余白 */
+    padding-top: -50vh; /* 文字をキャラクターの下にずらす */
+}
+
+.ai-result-bg-wrapper {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    padding-top: 400px; 
+    background-color: #faf7e9;/* ここでメインタイプを下にずらす */
+}
+
+
+.ai-result-bg {
+    position: absolute;
+    top: -85%; /* 上に少しずらして下20%を重ねる */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;   /* キャラクター幅 */
+    height: 120%;   /* 上にずらすので少し大きめに */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom; /* 下側がボックスと重なる */
+    z-index: 1; /* 背景 */
+}
+
+.result-box.main-result {
+    position: relative;
+    z-index: 2;
+    margin-top: 0; /* padding-topで調整したので margin-top は不要 */
 }
