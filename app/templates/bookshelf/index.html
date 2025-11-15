@@ -682,6 +682,72 @@ window.addEventListener("DOMContentLoaded", () => {
                 displayRecommendedBooksByKeywords();
             });
             </script>
-            
+            <script>
+    // 初期本データ（各エリア用に1冊ずつ）
+    const initialBooks = {
+        searchResult: {
+            "author": "ベンジャミン・グレアム",
+            "description": "『賢明なる投資家』の理解度が一気に進む解説付き！",
+            "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3400/9784775973400_1_2.jpg?_ex=200x200",
+            "itemUrl": "https://books.rakuten.co.jp/rb/18327208/",
+            "price": 4180,
+            "title": "新　賢明なる投資家（下）第3版"
+        },
+        viewHistory: {
+            "author": "両＠リベ大学長",
+            "description": "142万部突破の『お金の大学』が超・パワーアップ！",
+            "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3780/9784023323780_1_3.jpg?_ex=200x200",
+            "itemUrl": "https://books.rakuten.co.jp/rb/18041936/",
+            "price": 1650,
+            "title": "改訂版　本当の自由を手に入れる　お金の大学"
+        },
+        recommend: {
+            "author": "ピーター・リンチ",
+            "description": "株式投資の伝説的投資家による初心者向けの投資指南書。",
+            "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/1234/9781234123456_1_2.jpg?_ex=200x200",
+            "itemUrl": "https://books.rakuten.co.jp/rb/12341234/",
+            "price": 2200,
+            "title": "株で勝つためのシンプルルール"
+        }
+    };
+
+    // 閲覧履歴初期化
+    let viewHistory = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+    if (viewHistory.length === 0) {
+        viewHistory = [initialBooks.viewHistory];
+        localStorage.setItem("viewHistory", JSON.stringify(viewHistory));
+    }
+
+    // 検索結果初期表示
+    function displayInitialSearchResult() {
+        const searchContainer = document.getElementById("search-results");
+        searchContainer.innerHTML = "";
+        searchContainer.appendChild(createBookDiv(initialBooks.searchResult));
+    }
+
+    // 閲覧履歴表示
+    function displayViewHistory() {
+        const historyContainer = document.getElementById("view-history");
+        historyContainer.innerHTML = "";
+        viewHistory.forEach(book => {
+            historyContainer.appendChild(createBookDiv(book));
+        });
+    }
+
+    // おすすめ欄表示
+    function displayRecommendations() {
+        const recommendContainer = document.getElementById("recommend-books");
+        recommendContainer.innerHTML = "";
+        recommendContainer.appendChild(createBookDiv(initialBooks.recommend));
+    }
+
+    window.onload = () => {
+        displayInitialSearchResult();
+        displayViewHistory();
+        displayRecommendations();
+    };
+</script>
+<!-- index.html の下の方に追加 -->
+
 </body>
 </html>

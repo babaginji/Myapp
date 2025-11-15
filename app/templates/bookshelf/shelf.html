@@ -28,7 +28,7 @@
 
     <p><a href="{{ url_for('bookshelf.index') }}">トップに戻る</a></p>
 
-
+    
     <script>
         // Flask から渡された全棚データ
         const shelves = {{ shelves | tojson }};
@@ -240,6 +240,7 @@
         displayShelf();
     };
 </script>
+
     
 </body>
 </html>
