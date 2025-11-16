@@ -1,12 +1,10 @@
 import os
 from flask import Flask
-from .extensions import db, login_manager, csrf  # csrfを追加
+from .extensions import db, login_manager, csrf
 
 
 def create_app():
-    # -----------------------
     # Flask アプリ作成
-    # -----------------------
     app = Flask(__name__, instance_relative_config=True)
 
     # -----------------------
@@ -19,22 +17,25 @@ def create_app():
     # -----------------------
     # instance フォルダ内に SQLite を置く
     os.makedirs(app.instance_path, exist_ok=True)
-    app.config[
-        "SQLALCHEMY_DATABASE_URI"
-    ] = f"sqlite:///{os.path.join(app.instance_path, 'myapp.db')}"
+    db_path = os.path.join(app.instance_path, "myapp.db")
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    # アップロード先フォルダ
     app.config["UPLOAD_FOLDER"] = os.path.join(app.instance_path, "uploads")
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-    app.config["WTF_CSRF_TIME_LIMIT"] = None  # CSRFトークンの有効期限
+
+    # CSRF トークンの有効期限なし
+    app.config["WTF_CSRF_TIME_LIMIT"] = None
 
     # -----------------------
     # Extensions 初期化
     # -----------------------
     db.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"  # auth_bp の login を指す
-
-    csrf.init_app(app)  # CSRF保護を有効化
+    login_manager.login_view = "auth.login"  # auth_bp の login に合わせる
+    login_manager.session_protection = "strong"  # セッション保護
+    csrf.init_app(app)
 
     # -----------------------
     # Blueprints 登録
@@ -54,7 +55,7 @@ def create_app():
     app.register_blueprint(bookshelf_bp)
 
     # -----------------------
-    # DB 初期化（必要に応じて）
+    # DB 初期化（初回のみ）
     # -----------------------
     with app.app_context():
         db.create_all()
