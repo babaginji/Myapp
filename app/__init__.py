@@ -10,18 +10,21 @@ def create_app():
     # -----------------------
     # 秘密鍵（セッション用）
     # -----------------------
+    # 環境変数から取得。なければ開発用キーを使用
     app.secret_key = os.environ.get("SECRET_KEY", "dev_secret_key")
 
     # -----------------------
     # 設定
     # -----------------------
-    # instance フォルダ内に SQLite を置く
+    # instance フォルダを作成（SQLite やアップロード先）
     os.makedirs(app.instance_path, exist_ok=True)
+
+    # SQLite DB パス
     db_path = os.path.join(app.instance_path, "myapp.db")
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # アップロード先フォルダ
+    # アップロード先
     app.config["UPLOAD_FOLDER"] = os.path.join(app.instance_path, "uploads")
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
@@ -33,8 +36,8 @@ def create_app():
     # -----------------------
     db.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"  # auth_bp の login に合わせる
-    login_manager.session_protection = "strong"  # セッション保護
+    login_manager.login_view = "auth.login"
+    login_manager.session_protection = "strong"
     csrf.init_app(app)
 
     # -----------------------
