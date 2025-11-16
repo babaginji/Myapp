@@ -10,3 +10,4 @@ Flask_Login
 Flask_Migrate
 flask-wtf
 requests
+email-validator
