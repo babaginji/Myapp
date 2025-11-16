@@ -3,16 +3,23 @@
 {% block title %}新規投稿{% endblock %}
 
 {% block content %}
-<h1>新規投稿</h1>
+<h1 class="mb-4">新規投稿</h1>
+
 <form method="POST" action="{{ url_for('post.create_post') }}">
+    {{ form.hidden_tag() }}  {# ← CSRFトークンを埋め込む #}
+
     <div class="mb-3">
-        <input type="text" name="title" placeholder="タイトル" class="form-control" required>
+        {{ form.title(class="form-control", placeholder="タイトル") }}
     </div>
+
     <div class="mb-3">
-        <textarea name="content" placeholder="内容" rows="5" class="form-control" required></textarea>
+        {{ form.content(class="form-control", placeholder="内容", rows="5") }}
     </div>
-    <button type="submit" class="btn btn-primary">投稿</button>
+
+    {{ form.submit(class="btn btn-primary") }}
 </form>
 
-<p class="mt-3"><a href="{{ url_for('post.index') }}">← 投稿一覧へ戻る</a></p>
+<p class="mt-3">
+    <a href="{{ url_for('post.index') }}">← 投稿一覧へ戻る</a>
+</p>
 {% endblock %}

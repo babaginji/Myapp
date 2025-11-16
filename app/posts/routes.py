@@ -1,31 +1,31 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
-
 from app.extensions import db
 from app.posts.models import Post, Like, Comment
+from app.posts.forms import PostForm  # ← 追加: CSRF対応のフォーム
 
 post_bp = Blueprint("post", __name__, url_prefix="/")
 
 
+# 投稿一覧
 @post_bp.route("/", methods=["GET"])
 def index():
     posts = Post.query.order_by(Post.created_at.desc()).all()
     return render_template("posts/index.html", posts=posts)
 
 
+# 新規投稿（CSRF対応）
 @post_bp.route("/create", methods=["GET", "POST"])
 @login_required
 def create_post():
-    if request.method == "POST":
-        title = request.form.get("title", "").strip()
-        content = request.form.get("content", "").strip()
-
-        if not title or not content:
-            flash("タイトルと内容は必須です。", "danger")
-            return redirect(url_for("post.create_post"))
-
+    form = PostForm()
+    if form.validate_on_submit():
         try:
-            post = Post(title=title, content=content, user_id=current_user.id)
+            post = Post(
+                title=form.title.data.strip(),
+                content=form.content.data.strip(),
+                user_id=current_user.id
+            )
             db.session.add(post)
             db.session.commit()
             flash("投稿を作成しました！", "success")
@@ -34,10 +34,10 @@ def create_post():
             db.session.rollback()
             flash(f"投稿作成中にエラーが発生しました: {e}", "danger")
             return redirect(url_for("post.create_post"))
+    return render_template("posts/create_post.html", form=form)
 
-    return render_template("posts/create_post.html")
 
-
+# いいね
 @post_bp.route("/like/<int:post_id>", methods=["POST"])
 @login_required
 def like(post_id):
@@ -64,6 +64,7 @@ def like(post_id):
         return jsonify({"error": str(e)}), 500
 
 
+# コメント
 @post_bp.route("/comment/<int:post_id>", methods=["POST"])
 @login_required
 def comment(post_id):
@@ -88,6 +89,7 @@ def comment(post_id):
         return jsonify({"error": str(e)}), 500
 
 
+# 投稿詳細
 @post_bp.route("/<int:post_id>", methods=["GET"])
 def detail(post_id):
     post = Post.query.get_or_404(post_id)
