@@ -4,23 +4,35 @@ from .extensions import db, login_manager, csrf  # csrfを追加
 
 
 def create_app():
-    app = Flask(__name__)
-    app.secret_key = os.urandom(24)
+    # -----------------------
+    # Flask アプリ作成
+    # -----------------------
+    app = Flask(__name__, instance_relative_config=True)
+
+    # -----------------------
+    # 秘密鍵（セッション用）
+    # -----------------------
+    app.secret_key = os.environ.get("SECRET_KEY", "dev_secret_key")
 
     # -----------------------
     # 設定
     # -----------------------
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///myapp.db"
+    # instance フォルダ内に SQLite を置く
+    os.makedirs(app.instance_path, exist_ok=True)
+    app.config[
+        "SQLALCHEMY_DATABASE_URI"
+    ] = f"sqlite:///{os.path.join(app.instance_path, 'myapp.db')}"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["UPLOAD_FOLDER"] = "uploads"
-    app.config["WTF_CSRF_TIME_LIMIT"] = None  # CSRFトークンの有効期限（必要に応じて）
+    app.config["UPLOAD_FOLDER"] = os.path.join(app.instance_path, "uploads")
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+    app.config["WTF_CSRF_TIME_LIMIT"] = None  # CSRFトークンの有効期限
 
     # -----------------------
     # Extensions 初期化
     # -----------------------
     db.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"
+    login_manager.login_view = "auth.login"  # auth_bp の login を指す
 
     csrf.init_app(app)  # CSRF保護を有効化
 
@@ -42,9 +54,9 @@ def create_app():
     app.register_blueprint(bookshelf_bp)
 
     # -----------------------
-    # DB初期化 / マイグレーションは別途使用
+    # DB 初期化（必要に応じて）
     # -----------------------
-    # with app.app_context():
-    #     db.create_all()  # Flask-Migrate 使う場合は不要
+    with app.app_context():
+        db.create_all()
 
     return app
