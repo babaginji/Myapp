@@ -35,7 +35,7 @@ def create_app():
     from .bookshelf.routes import bookshelf_bp
 
     app.register_blueprint(auth_bp)
-    app.register_blueprint(feed_bp, url_prefix="/feed")
+    app.register_blueprint(feed_bp)
     app.register_blueprint(invest_clock_bp, url_prefix="/clock")
     app.register_blueprint(ai_diagnosis_bp, url_prefix="/ai")
     app.register_blueprint(post_bp)

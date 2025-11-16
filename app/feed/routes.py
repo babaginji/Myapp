@@ -3,7 +3,8 @@ from flask_login import login_required, current_user
 from app import db
 from app.posts.models import Post, Like, Comment, Repost
 
-feed_bp = Blueprint("feed", __name__, template_folder="templates", url_prefix="/feed")
+# url_prefixを空にしてトップページに設定
+feed_bp = Blueprint("feed", __name__, template_folder="templates", url_prefix="")
 
 
 @feed_bp.route("/")
@@ -15,7 +16,7 @@ def feed_home():
     for post in posts:
         post.ordered_comments = post.comments.order_by(Comment.created_at.asc()).all()
 
-    return render_template("feed/feed.html", posts=posts)
+    return render_template("feed/feed.html", posts=posts, current_user=current_user)
 
 
 # ❤️ いいね
