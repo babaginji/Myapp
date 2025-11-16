@@ -121,7 +121,7 @@ const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute
 
 function toggleLike(postId) {
     const btn = document.getElementById(`like-btn-${postId}`);
-    fetch(`/feed/like/${postId}`, {
+    fetch(`/like/${postId}`, {
         method: "POST",
         headers: {"X-CSRFToken": csrfToken}
     })
@@ -138,9 +138,8 @@ function toggleLike(postId) {
     });
 }
 
-
 function sendRepost(postId) {
-    fetch(`/feed/repost/${postId}`, {
+    fetch(`/repost/${postId}`, {
         method: "POST",
         headers: {"X-CSRFToken": csrfToken}
     })
@@ -148,17 +147,12 @@ function sendRepost(postId) {
     .then(data => console.log("REPOST:", data));
 }
 
-function openCommentBox(postId) {
-    let box = document.getElementById(`comment-box-${postId}`);
-    box.style.display = (box.style.display === "none") ? "block" : "none";
-}
-
 function postComment(postId) {
     let input = document.getElementById(`comment-input-${postId}`);
     let text = input.value.trim();
     if(!text) return;
 
-    fetch(`/feed/comment/${postId}`, {
+    fetch(`/comment/${postId}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -173,13 +167,13 @@ function postComment(postId) {
             const postDiv = document.getElementById(`post-${postId}`);
             const commentList = postDiv.querySelector(".comment-list");
 
-            // サーバーから返ってきたHTMLで差し替え
             commentList.innerHTML = data.comments_html;
         } else {
             alert(data.error || "コメント送信失敗");
         }
     });
 }
+
 
 function toggleComments(btn) {
     const hiddenComments = btn.parentElement.querySelectorAll('.comment-hidden');
