@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask
 from .extensions import db, login_manager, csrf
 
@@ -8,27 +9,29 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
 
     # -----------------------
+    # ログ設定
+    # -----------------------
+    logging.basicConfig(level=logging.DEBUG)  # DEBUG レベルで全部出す
+    logger = logging.getLogger(__name__)
+    logger.debug("Creating Flask app...")
+
+    # -----------------------
     # 秘密鍵（セッション用）
     # -----------------------
-    # 環境変数から取得。なければ開発用キーを使用
     app.secret_key = os.environ.get("SECRET_KEY", "dev_secret_key")
+    logger.debug(f"SECRET_KEY set: {app.secret_key[:8]}...")  # 一部だけ表示
 
     # -----------------------
     # 設定
     # -----------------------
-    # instance フォルダを作成（SQLite やアップロード先）
     os.makedirs(app.instance_path, exist_ok=True)
-
-    # SQLite DB パス
     db_path = os.path.join(app.instance_path, "myapp.db")
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # アップロード先
     app.config["UPLOAD_FOLDER"] = os.path.join(app.instance_path, "uploads")
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-    # CSRF トークンの有効期限なし
     app.config["WTF_CSRF_TIME_LIMIT"] = None
 
     # -----------------------
@@ -39,6 +42,7 @@ def create_app():
     login_manager.login_view = "auth.login"
     login_manager.session_protection = "strong"
     csrf.init_app(app)
+    logger.debug("Extensions initialized.")
 
     # -----------------------
     # Blueprints 登録
@@ -56,11 +60,16 @@ def create_app():
     app.register_blueprint(ai_diagnosis_bp, url_prefix="/ai")
     app.register_blueprint(post_bp)
     app.register_blueprint(bookshelf_bp)
+    logger.debug("Blueprints registered.")
 
     # -----------------------
     # DB 初期化（初回のみ）
     # -----------------------
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+            logger.debug("Database tables created or already exist.")
+        except Exception as e:
+            logger.exception("Error creating database tables: %s", e)
 
     return app
