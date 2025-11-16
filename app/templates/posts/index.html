@@ -28,10 +28,10 @@
         <p>投稿者: {{ post.user.username }}</p>
 
         <!-- いいね -->
-        <button class="like-btn" data-post-id="{{ post.id }}">
-            <span class="heart {% if current_user.is_authenticated and post.likes|selectattr('user_id', 'equalto', current_user.id)|list %}liked{% endif %}">❤</span>
-            <span class="like-count">{{ post.likes|length }}</span>
+        <button class="action-btn" onclick="toggleLike({{ post.id }})">
+            ❤️ いいね (<span id="like-count-{{ post.id }}">{{ post.likes.count() }}</span>)
         </button>
+        
 
         <!-- コメント欄 -->
         <div class="comment-box">

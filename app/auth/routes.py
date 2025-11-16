@@ -98,28 +98,35 @@ def edit_profile():
     form = EditProfileForm()
 
     if form.validate_on_submit():
+        # ユーザー名・自己紹介更新
         current_user.username = form.username.data
         current_user.bio = getattr(form, "bio", getattr(current_user, "bio", ""))
 
-        # アイコンアップロード
-        if form.icon.data:
-            upload_folder = current_app.config.get("UPLOAD_FOLDER", "uploads")
+        # Cropperでアップロードされたアイコン画像を処理
+        cropped_icon = request.files.get("cropped_icon")
+        if cropped_icon:
+            # 保存先フォルダ
+            upload_folder = os.path.join(current_app.root_path, "static", "icons")
             os.makedirs(upload_folder, exist_ok=True)
 
-            filename = secure_filename(form.icon.data.filename)
+            # ファイル名はユーザーID.pngで固定
+            filename = f"{current_user.id}.png"
             filepath = os.path.join(upload_folder, filename)
-            form.icon.data.save(filepath)
+
+            # 保存
+            cropped_icon.save(filepath)
             current_user.icon = filename
 
+        # DB保存
         db.session.commit()
         flash("プロフィールを更新しました！", "success")
-        return redirect(url_for("auth.profile"))
+        return redirect(url_for("auth.profile", user_id=current_user.id))
 
-    # 初期値
+    # GETの場合、フォーム初期値設定
     form.username.data = current_user.username
     form.bio.data = getattr(current_user, "bio", "")
 
-    return render_template("auth/edit_profile.html", form=form)
+    return render_template("auth/edit_profile.html", form=form, user=current_user)
 
 
 # ----------------------

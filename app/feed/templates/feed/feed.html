@@ -4,77 +4,190 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>トップページ</title>
-    <!-- feed専用CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='feed.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
 
-    <header>
-        <h1>
-            <a href="#" id="site-name">I comunication ▼</a>
-        </h1>
-        <!-- 出てくるボックス -->
-        <div class="feature-links" id="feature-links">
-            <!-- 他ページに移動 -->
-            <a href="{{ url_for('ai_diagnosis.ai_home') }}">AI診断へ</a>
-            <a href="{{ url_for('invest_clock.clock_home') }}">複利時計</a>
-            <a href="https://investment-books.onrender.com">本棚</a>
-            <a href="#">複利計算</a>
-        </div>
-        <nav class="top-nav">
-            <a href="#">
-                <img src="{{ url_for('static', filename='images/tuuchi.jpg') }}" alt="通知" class="top-nav-icon">
-            </a>
-            <a href="#">
-                <img src="{{ url_for('static', filename='images/DM.jpg') }}" alt="DM" class="top-nav-icon">
-            </a>
-        </nav>
-    </header>
+<header>
+    <h1>
+        <a href="#" id="site-name">I comunication ▼</a>
+    </h1>
+
+    <div class="feature-links" id="feature-links">
+        <a href="{{ url_for('ai_diagnosis.ai_home') }}">AI診断へ</a>
+        <a href="{{ url_for('invest_clock.clock_home') }}">複利時計</a>
+        <a href="https://investment-books.onrender.com">本棚</a>
+        <a href="#">複利計算</a>
+    </div>
+
+    <nav class="top-nav">
+        <a href="#"><img src="{{ url_for('static', filename='images/tuuchi.jpg') }}" alt="通知" class="top-nav-icon"></a>
+        <a href="#"><img src="{{ url_for('static', filename='images/DM.jpg') }}" alt="DM" class="top-nav-icon"></a>
+    </nav>
+</header>
+
+<main class="feed-container">
+
+    {% for post in posts %}
+    <div class="tweet-card" id="post-{{ post.id }}">
     
-    <main class="feed-container">
-
-        <!-- 投稿一覧 -->
-        {% for post in posts %}
-        <div class="post">
-            <h2>{{ post.title }}</h2>
-            <p>{{ post.content }}</p>
-            <small>投稿者: {{ post.user.username }} / {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+        <div class="tweet-header">
+            <img src="{{ url_for('static', filename='images/default_icon.png') }}" class="tweet-icon">
+            <div class="tweet-user-info">
+                <span class="tweet-username">{{ post.user.username }}</span>
+                <span class="tweet-date">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
         </div>
-        {% else %}
-        <p>投稿はまだありません。</p>
-        {% endfor %}
+    
+        <div class="tweet-content">
+            <p class="tweet-text">{{ post.content }}</p>
+        </div>
+    
+        <div class="tweet-actions">
+            {% if current_user.is_authenticated %}
+                <button class="action-btn" onclick="openCommentBox({{ post.id }})">💬 コメント</button>
+                <button class="action-btn" onclick="sendRepost({{ post.id }})">🔁 転送</button>
+                <button class="action-btn like-btn {% if current_user.is_authenticated and post.is_liked_by(current_user) %}liked{% endif %}" 
+        id="like-btn-{{ post.id }}" onclick="toggleLike({{ post.id }})">
+    <span class="heart">❤️</span> 
+    <span class="like-count" id="like-count-{{ post.id }}">{{ post.likes.count() }}</span>
+</button>
 
-    </main>
 
-    <footer>
-        <nav class="bottom-nav">
-            <a href="#">ホーム</a>
-            <a href="#">探す</a>
-            <a href="{{ url_for('post.create_post') }}">投稿</a>
-            <a href="#">ポートフォリオ</a>
-            <a href="{{ url_for('auth.profile') }}">プロフィール</a>
-        </nav>
-    </footer>
+                
+            {% else %}
+                <button class="action-btn" onclick="alert('ログインしてください')">💬 コメント</button>
+                <button class="action-btn" onclick="alert('ログインしてください')">🔁 転送</button>
+                <button class="action-btn" onclick="alert('ログインしてください')">❤️ いいね</button>
+            {% endif %}
+        </div>
+        
+        
+        <!-- コメント一覧 -->
+<div class="comment-box-scroll">
+    {% for comment in post.ordered_comments %}
+    <p class="comment-text">{{ comment.user.username }}: {{ comment.content }}</p>
+    {% endfor %}
+</div>
 
-    <script>
-        const siteName = document.getElementById("site-name");
-        const featureLinks = document.getElementById("feature-links");
+<!-- コメント入力欄 -->
+{% if current_user.is_authenticated %}
+<div class="comment-input-box">
+    <input type="text" placeholder="コメントを書く…" id="comment-input-{{ post.id }}">
+    <button onclick="postComment({{ post.id }})">送信</button>
+</div>
+{% else %}
+<p style="color:#888; font-size:14px; margin-top:5px;">
+    コメントするには<a href="{{ url_for('auth.login') }}">ログイン</a>してください
+</p>
+{% endif %}
 
-        siteName.addEventListener("click", (event) => {
-            event.preventDefault();
-            featureLinks.style.display =
-                featureLinks.style.display === "flex" ? "none" : "flex";
-        });
 
-        document.addEventListener("click", (event) => {
-            if (
-                !siteName.contains(event.target) &&
-                !featureLinks.contains(event.target)
-            ) {
-                featureLinks.style.display = "none";
-            }
-        });
-    </script>
+    </div>
+    {% else %}
+    <p>投稿はまだありません。</p>
+    {% endfor %}
+
+</main>
+
+<footer>
+    <nav class="bottom-nav">
+        <a href="#">ホーム</a>
+        <a href="#">探す</a>
+        <a href="{{ url_for('post.create_post') }}">投稿</a>
+        <a href="#">ポートフォリオ</a>
+        <a href="{{ url_for('auth.profile') }}">プロフィール</a>
+    </nav>
+</footer>
+
+<script>
+const siteName = document.getElementById("site-name");
+const featureLinks = document.getElementById("feature-links");
+
+siteName.addEventListener("click", (event) => {
+    event.preventDefault();
+    featureLinks.style.display = (featureLinks.style.display === "flex") ? "none" : "flex";
+});
+
+document.addEventListener("click", (event) => {
+    if (!siteName.contains(event.target) && !featureLinks.contains(event.target)) {
+        featureLinks.style.display = "none";
+    }
+});
+
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+function toggleLike(postId) {
+    const btn = document.getElementById(`like-btn-${postId}`);
+    fetch(`/feed/like/${postId}`, {
+        method: "POST",
+        headers: {"X-CSRFToken": csrfToken}
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.count !== undefined) {
+            document.getElementById(`like-count-${postId}`).textContent = data.count;
+        }
+        if(data.liked) {
+            btn.classList.add("liked");
+        } else {
+            btn.classList.remove("liked");
+        }
+    });
+}
+
+
+function sendRepost(postId) {
+    fetch(`/feed/repost/${postId}`, {
+        method: "POST",
+        headers: {"X-CSRFToken": csrfToken}
+    })
+    .then(res => res.json())
+    .then(data => console.log("REPOST:", data));
+}
+
+function openCommentBox(postId) {
+    let box = document.getElementById(`comment-box-${postId}`);
+    box.style.display = (box.style.display === "none") ? "block" : "none";
+}
+
+function postComment(postId) {
+    let input = document.getElementById(`comment-input-${postId}`);
+    let text = input.value.trim();
+    if(!text) return;
+
+    fetch(`/feed/comment/${postId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+        },
+        body: JSON.stringify({content: text})
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.ok) {
+            input.value = "";
+            const postDiv = document.getElementById(`post-${postId}`);
+            const commentList = postDiv.querySelector(".comment-list");
+
+            // サーバーから返ってきたHTMLで差し替え
+            commentList.innerHTML = data.comments_html;
+        } else {
+            alert(data.error || "コメント送信失敗");
+        }
+    });
+}
+
+function toggleComments(btn) {
+    const hiddenComments = btn.parentElement.querySelectorAll('.comment-hidden');
+    hiddenComments.forEach(p => {
+        p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+    });
+    btn.textContent = btn.textContent.includes('表示') ? 'コメントを隠す▲' : '他のコメントを表示▼';
+}
+</script>
 
 </body>
 </html>

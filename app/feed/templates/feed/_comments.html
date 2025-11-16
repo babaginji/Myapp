@@ -1,0 +1,49 @@
+{# templates/feed/_comments.html #}
+<div class="comment-list">
+    {% if comments %}
+        {% set first_comment = comments[0] %}
+        <p class="comment-text">{{ first_comment.user.username }}: {{ first_comment.content }}</p>
+
+        {% if comments|length > 1 %}
+            <div class="comment-hidden" style="display:none;">
+                {% for comment in comments[1:] %}
+                <p class="comment-text">{{ comment.user.username }}: {{ comment.content }}</p>
+                {% endfor %}
+            </div>
+            <button class="show-more-btn" onclick="toggleComments(this)">他のコメントを表示▼</button>
+        {% endif %}
+    {% endif %}
+</div>
+
+<style>
+.comment-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+.comment-text {
+    font-size: 12px;
+    margin: 2px 0;
+}
+
+.show-more-btn {
+    font-size: 12px;
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    padding: 2px 0;
+}
+</style>
+
+<script>
+function toggleComments(btn) {
+    const hiddenComments = btn.parentElement.querySelector('.comment-hidden');
+    if(hiddenComments) {
+        const isHidden = hiddenComments.style.display === 'none';
+        hiddenComments.style.display = isHidden ? 'block' : 'none';
+        btn.textContent = isHidden ? 'コメントを隠す▲' : '他のコメントを表示▼';
+    }
+}
+</script>
