@@ -4,6 +4,7 @@
 <div class="container">
     <h1>AI投資診断</h1>
     <form method="POST" id="quizForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <!-- ページ1 -->
         <div class="question-page">
             <p class="question">Q1. 主な投資の目的は？</p>
