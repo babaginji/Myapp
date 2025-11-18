@@ -83,10 +83,23 @@ def logout():
 @auth_bp.route("/profile")
 @login_required
 def profile():
-    icon_url = url_for(
-        "auth.static", filename=f"icons/{getattr(current_user, 'icon', 'default.png')}"
+    # user_id がなければ current_user
+    user_id = request.args.get("user_id", current_user.id)
+    user = User.query.get(user_id)
+    if not user:
+        flash("ユーザーが存在しません。", "danger")
+        return redirect(url_for("feed.feed_home"))
+
+    # キャッシュ回避のためにクエリパラメータを追加
+    icon_url = (
+        url_for(
+            "auth.static",
+            filename=f"icons/{getattr(user, 'icon', 'default.png')}",
+        )
+        + f"?v={user.id}{getattr(user, 'icon', '')}"
     )
-    return render_template("auth/profile.html", user=current_user, icon_url=icon_url)
+
+    return render_template("auth/profile.html", user=user, icon_url=icon_url)
 
 
 # ----------------------
@@ -102,15 +115,20 @@ def edit_profile():
         current_user.username = form.username.data
         current_user.bio = getattr(form, "bio", getattr(current_user, "bio", ""))
 
-        # Cropperでアップロードされたアイコン画像を処理
+        # アップロードされたアイコン画像を処理
         cropped_icon = request.files.get("cropped_icon")
-        if cropped_icon:
+        if cropped_icon and cropped_icon.filename:
+            # 安全なファイル名と拡張子取得
+            filename_secure = secure_filename(cropped_icon.filename)
+            _, ext = os.path.splitext(filename_secure)
+            ext = ext.lower() if ext else ".png"
+
             # 保存先フォルダ
             upload_folder = os.path.join(current_app.root_path, "static", "icons")
             os.makedirs(upload_folder, exist_ok=True)
 
-            # ファイル名はユーザーID.pngで固定
-            filename = f"{current_user.id}.png"
+            # ファイル名は userID + 拡張子
+            filename = f"{current_user.id}{ext}"
             filepath = os.path.join(upload_folder, filename)
 
             # 保存
