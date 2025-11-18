@@ -1,58 +1,74 @@
-/* ==============================
+/* ------------------------------
    基本設定
-============================== */
+------------------------------ */
 html, body {
     width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: "Helvetica", "Arial", sans-serif;
-    background-color: #f2f2f2;
-    overflow-x: hidden;
+    overflow-x: hidden; /* 横スクロールを完全に禁止 */
 }
 
-/* ==============================
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fff; /* 中央も白に統一 */
+}
+
+/* ------------------------------
    ヘッダー
-============================== */
+------------------------------ */
 header {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px; /* 左右パディングを少し減らす */
+    background-color: #fff;
+    border-bottom: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 70px; /* ヘッダー高さ */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
-    background-color: #fff;
     z-index: 1000;
-    box-sizing: border-box;
-    border-bottom: 1px solid #ddd;
+    box-sizing: border-box; /* 幅計算にパディングを含める */
+}
+
+
+/* サイト名 */
+header h1 {
+    font-size: 1.4rem;
+    margin: 0;
+    position: relative;
 }
 
 header h1 a {
     text-decoration: none;
-    color: #111;
-    font-size: 20px;
-    font-weight: bold;
+    color: #333;
 }
 
+/* 通知・DMボタンを右端に配置 */
 .top-nav {
     display: flex;
     gap: 10px;
+    margin-left: auto;
+    padding-right: 10px; /* 右端に余白を追加 */
 }
-
+/* 通知アイコン画像 */
+.notif-icon {
+    width: 24px; /* 元の文字リンクサイズに合わせる */
+    height: 24px; /* 必要に応じて調整 */
+    object-fit: contain;
+}
+/* ヘッダーの通知・DMアイコン */
 .top-nav-icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;      /* 元のボタンサイズに合わせる */
+    height: 24px;
     object-fit: contain;
 }
 
-/* サイト名クリックで出るリンクボックス */
+
+/* サイト名クリックで出る四角いリンクボックス（スクロール追従） */
 .feature-links {
-    display: none;
+    display: none; /* デフォルト非表示 */
     position: fixed;
-    top: 70px; /* ヘッダーの下 */
+    top: 45px;
     left: 20px;
     background-color: rgba(255, 255, 255, 0.95);
     border: 1px solid #ddd;
@@ -60,20 +76,35 @@ header h1 a {
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     z-index: 1001;
+    min-width: 220px;
+    display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+/* 縦並びの文字型リンク */
+.feature-links a {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    text-decoration: none;
+    color: #333;
+    text-align: center;
 }
 
 /* ------------------------------
    メインコンテナ
 ------------------------------ */
 .feed-container {
-    padding-top: 80px;  /* ヘッダー高さ+余白 */
-    padding-bottom: 70px; /* フッター高さ分 */
     width: 100%;
     max-width: 100%;
-    box-sizing: border-box;
+    margin: 0;
+    padding-top: 70px;  /* ヘッダーの高さ分 */
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 70px; /* フッター分も余白を確保 */
 }
+
 
 /* ------------------------------
    フッター
@@ -82,17 +113,15 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 70px; /* フッター高さ */
-    background-color: #fff;
-    border-top: 1px solid #ddd;
+    background-color: #fff; /* フッターも白 */
+    border-top: none; /* 境界線なし */
     z-index: 1000;
 }
 
 .bottom-nav {
     display: flex;
     justify-content: space-around;
-    align-items: center;
-    height: 100%;
+    padding: 10px 0;
 }
 
 .bottom-nav a {
@@ -100,17 +129,59 @@ footer {
     color: #333;
 }
 
-/* ==============================
-   ツイッター風投稿
-============================== */
+/* ------------------------------
+   レスポンシブ調整
+------------------------------ */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.2rem;
+    }
+
+    .feature-links {
+        min-width: 160px;
+        padding: 15px;
+        top: 40px;
+        left: 10px;
+    }
+
+    .feature-links a {
+        font-size: 0.9rem;
+    }
+}
+
+
+/* ------------------------------
+   ツイッター風の投稿
+------------------------------ */
+/* ===== 基本設定 ===== */
+
+html, body {
+    width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    background: #f2f2f2;
+    font-family: "Helvetica", "Arial", sans-serif;
+}
+
+/* 🔥 画面ぴったり＋左右のpaddingをゼロに */
+
+
+
+/* ===== タイムラインカード ===== */
+
 .tweet-card {
     background: #fff;
     padding: 15px 18px;
-    margin: 10px 0;
+    margin: 0;                 /* ←左右がはみ出さないように */
     border-bottom: 1px solid #e6e6e6;
-    width: 100%;
-    box-sizing: border-box;
+    border-radius: 0;
+    width: 100%;               /* 完全に画面幅に合わせる */
+    box-sizing: border-box;    /* ←padding込みで100%に収める */
 }
+
+
+/* ===== ヘッダー（アイコン＋名前＋日時） ===== */
 
 .tweet-header {
     display: flex;
@@ -144,6 +215,9 @@ footer {
     margin-top: 2px;
 }
 
+
+/* ===== 本文 ===== */
+
 .tweet-text {
     font-size: 15px;
     line-height: 1.5;
@@ -151,11 +225,38 @@ footer {
     color: #333;
 }
 
-/* アクションバー */
+
+/* ===== header ===== */
+
+
+
+#site-name {
+    text-decoration: none;
+    color: #111;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.top-nav {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.top-nav-icon {
+    width: 28px;
+    margin-left: 10px;
+}
+
+
+/* ===== アクションバー ===== */
+
 .tweet-actions {
     display: flex;
-    gap: 10px;
+    gap: 10px;              /* 🔥 ボタンの間隔を詰める */
     margin-top: 8px;
+    padding-top: 0;         /* 🔥 上の余白を減らす */
+    border-top: none;       /* 🔥 本文との区切り線を削除 */
 }
 
 .action-btn {
@@ -164,27 +265,46 @@ footer {
     font-size: 14px;
     color: #555;
     cursor: pointer;
-    padding: 4px 6px;
+    padding: 4px 6px;       /* 🔥 小さめにしてコンパクトに */
     border-radius: 4px;
+    transition: background 0.15s;
 }
 
 .action-btn:hover {
     background: #f0f0f0;
 }
 
-/* コメント */
+/* ===== コメント ===== */
+.comment-list p {
+    font-size: 12px;        /* 文字を小さく */
+    margin: 2px 0;          /* 上下の余白を小さく */
+    line-height: 1.2em;
+}
+
+/* 複数コメントを隠す */
+.comment-hidden {
+    display: none;
+}
+
+/* 展開ボタン */
+.show-more-comments {
+    font-size: 12px;
+    color: #007bff;
+    cursor: pointer;
+    margin: 2px 0;
+}
 .comment-box-scroll {
-    max-height: 60px;
+    max-height: 60px; /* 高さ固定 */
     overflow-y: auto;
     padding: 5px 10px;
     background-color: #f5f5f5;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 14px; /* コメント文字小さく */
     margin-top: 8px;
 }
 
 .comment-text {
-    margin: 2px 0;
+    margin: 2px 0; /* コメント間をコンパクトに */
 }
 
 .comment-input-box {
@@ -213,8 +333,7 @@ footer {
 .comment-input-box button:hover {
     background-color: #0056b3;
 }
-
-/* いいね */
+/* ===== いいね ===== */
 .like-btn {
     border: none;
     background: none;
@@ -226,11 +345,12 @@ footer {
 }
 
 .like-btn .heart {
-    color: #888;
+    color: #888; /* 初期グレー */
     transition: transform 0.2s, color 0.2s;
 }
 
 .like-btn.liked .heart {
-    color: #e0245e;
+    color: #e0245e; /* ピンク */
     transform: scale(1.3);
 }
+
